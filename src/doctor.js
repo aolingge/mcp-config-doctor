@@ -196,3 +196,30 @@ File: \`${report.file}\`
 ${rows}
 `
 }
+
+export function formatAnnotations(report) {
+  return report.results
+    .filter((result) => result.status !== 'PASS')
+    .map((result) => `::warning file=${report.file},title=${result.check}::${result.message}${result.fix ? ` Fix: ${result.fix}` : ''}`)
+    .join('\n')
+}
+
+export function formatSarif(report) {
+  return {
+    version: '2.1.0',
+    $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
+    runs: [
+      {
+        tool: { driver: { name: 'mcp-config-doctor', informationUri: 'https://github.com/aolingge/mcp-config-doctor' } },
+        results: report.results
+          .filter((result) => result.status !== 'PASS')
+          .map((result) => ({
+            ruleId: result.check,
+            level: result.status === 'FAIL' ? 'error' : 'warning',
+            message: { text: result.fix ? `${result.message} Fix: ${result.fix}` : result.message },
+            locations: [{ physicalLocation: { artifactLocation: { uri: report.file } } }],
+          })),
+      },
+    ],
+  }
+}

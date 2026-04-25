@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import process from 'node:process'
-import { defaultConfigCandidates, diagnoseConfig, formatMarkdown, formatText } from './doctor.js'
+import { defaultConfigCandidates, diagnoseConfig, formatAnnotations, formatMarkdown, formatSarif, formatText } from './doctor.js'
+
+const VERSION = '0.1.0'
 
 function parseArgs(argv) {
   const args = {
@@ -9,7 +11,10 @@ function parseArgs(argv) {
     minScore: 70,
     markdown: false,
     json: false,
+    sarif: false,
+    annotations: false,
     start: false,
+    version: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -18,7 +23,10 @@ function parseArgs(argv) {
     else if (item === '--min-score') args.minScore = Number(argv[++index])
     else if (item === '--markdown') args.markdown = true
     else if (item === '--json') args.json = true
+    else if (item === '--sarif') args.sarif = true
+    else if (item === '--annotations') args.annotations = true
     else if (item === '--start') args.start = true
+    else if (item === '--version') args.version = true
     else if (item === '-h' || item === '--help') args.help = true
     else throw new Error(`Unknown option: ${item}`)
   }
@@ -26,7 +34,7 @@ function parseArgs(argv) {
 }
 
 function help() {
-  console.log(`mcp-config-doctor
+  console.log(`mcp-config-doctor v${VERSION}
 
 Usage:
   mcp-config-doctor --config claude_desktop_config.json
@@ -39,6 +47,9 @@ Options:
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
   --json             print raw JSON report
+  --sarif            print SARIF 2.1.0 report
+  --annotations      print GitHub Actions warnings
+  --version          print version
 `)
 }
 
@@ -48,6 +59,10 @@ function findConfig() {
 
 try {
   const args = parseArgs(process.argv.slice(2))
+  if (args.version) {
+    console.log(VERSION)
+    process.exit(0)
+  }
   if (args.help) {
     help()
     process.exit(0)
@@ -62,6 +77,8 @@ try {
 
   if (args.json) console.log(JSON.stringify(report, null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))
+  else if (args.sarif) console.log(JSON.stringify(formatSarif(report), null, 2))
+  else if (args.annotations) console.log(formatAnnotations(report))
   else console.log(formatText(report))
 
   process.exit(report.score >= args.minScore ? 0 : 1)
