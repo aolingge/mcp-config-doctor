@@ -1,35 +1,67 @@
 <svg width="1280" height="520" viewBox="0 0 1280 520" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1280" height="520" fill="#0B1020"/>
-  <path d="M0 405C146 326 276 332 408 375C575 430 724 461 878 388C1013 324 1133 292 1280 335V520H0V405Z" fill="#12283A"/>
-  <path d="M0 90C170 150 313 152 485 86C654 21 784 22 949 91C1071 142 1167 154 1280 112" stroke="#36C2A7" stroke-width="2" opacity=".35"/>
-  <path d="M0 137C176 199 343 210 525 139C680 79 819 78 974 143C1091 192 1176 201 1280 167" stroke="#FFCF5C" stroke-width="2" opacity=".28"/>
-  <g opacity=".95">
-    <rect x="84" y="76" width="1112" height="368" rx="22" fill="#101827" stroke="#263348"/>
-    <rect x="116" y="112" width="430" height="254" rx="14" fill="#07111F" stroke="#243449"/>
-    <circle cx="146" cy="142" r="8" fill="#FF6B6B"/>
-    <circle cx="172" cy="142" r="8" fill="#FFCF5C"/>
-    <circle cx="198" cy="142" r="8" fill="#36C2A7"/>
-    <text x="146" y="197" fill="#E6F0FF" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="26" font-weight="700">MCP Config Doctor</text>
-    <text x="146" y="238" fill="#9FB0C8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">Diagnose before your AI client fails.</text>
-    <rect x="146" y="278" width="112" height="34" rx="17" fill="#36C2A7"/>
-    <text x="168" y="301" fill="#07111F" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="700">score 92</text>
-    <rect x="270" y="278" width="132" height="34" rx="17" fill="#1B2A3D" stroke="#2D4059"/>
-    <text x="292" y="301" fill="#D6E4F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15">local-first</text>
-    <rect x="414" y="278" width="86" height="34" rx="17" fill="#1B2A3D" stroke="#2D4059"/>
-    <text x="438" y="301" fill="#D6E4F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15">CLI</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#080B12"/>
+      <stop offset=".55" stop-color="#0E1424"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(210 70) rotate(28) scale(560 260)">
+      <stop stop-color="#10B981" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1120 430) rotate(160) scale(520 250)">
+      <stop stop-color="#34D399" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="44" y="66" width="1192" height="404" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="#000000" flood-opacity=".38"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="520" fill="url(#bg)"/>
+  <rect width="1280" height="520" fill="url(#glowA)"/>
+  <rect width="1280" height="520" fill="url(#glowB)"/>
+  <path d="M0 106h1280M0 206h1280M0 306h1280M0 406h1280M160 0v520M320 0v520M480 0v520M640 0v520M800 0v520M960 0v520M1120 0v520" stroke="#94A3B8" stroke-opacity=".08"/>
+  <path d="M94 390C256 298 438 286 610 352C782 418 942 396 1186 260" stroke="#A7F3D0" stroke-width="2" stroke-opacity=".22"/>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="76" width="1136" height="368" rx="28" fill="#0B1220" stroke="#263244"/>
+    <rect x="96" y="100" width="1088" height="320" rx="22" fill="#0F172A" stroke="#1E293B"/>
   </g>
-  <g>
-    <rect x="610" y="116" width="472" height="288" rx="18" fill="#07111F" stroke="#2D4059"/>
-    <text x="646" y="162" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS</text>
-    <text x="720" y="162" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">json</text>
-    <text x="646" y="211" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS</text>
-    <text x="720" y="211" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">servers</text>
-    <text x="646" y="260" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN</text>
-    <text x="720" y="260" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PATH</text>
-    <text x="646" y="309" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN</text>
-    <text x="720" y="309" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">secret-like env</text>
-    <line x1="646" y1="346" x2="1038" y2="346" stroke="#263348"/>
-    <text x="646" y="377" fill="#9FB0C8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">Claude Desktop · Cursor · Codex · CI</text>
+
+  <g transform="translate(128 132)">
+    <rect width="188" height="188" rx="36" fill="#111827" stroke="#334155"/>
+    <rect x="18" y="18" width="152" height="152" rx="30" fill="#10B981" opacity=".14"/>
+    <path d="M76 38h72l36 62-36 62H76l-36-62 36-62Z" stroke="#A7F3D0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 100h108M112 38v124" stroke="#A7F3D0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(356 128)">
+    <text x="0" y="38" fill="#F8FAFC" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="850">MCP Config Doctor</text>
+    <text x="0" y="76" fill="#94A3B8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" font-weight="500">A local-first CLI that diagnoses MCP config</text>
+    <text x="0" y="106" fill="#64748B" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18" font-weight="500">files before your AI client fails to conn...</text>
+    <g transform="translate(0 138)">
+      <rect width="122" height="36" rx="18" fill="#A7F3D0"/>
+      <text x="26" y="24" fill="#020617" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="850">v0.1.0</text>
+      <rect x="136" width="118" height="36" rx="18" fill="#1E293B" stroke="#334155"/>
+      <text x="162" y="24" fill="#E2E8F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="760">zero deps</text>
+      <rect x="268" width="108" height="36" rx="18" fill="#1E293B" stroke="#334155"/>
+      <text x="293" y="24" fill="#E2E8F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="760">CI ready</text>
+    </g>
+    <text x="0" y="234" fill="#CBD5E1" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="17">AI-ready checks · mirrored release · bilingual docs</text>
+    <text x="0" y="266" fill="#64748B" font-family="JetBrains Mono,Consolas,monospace" font-size="15">mcp-config-doctor</text>
+  </g>
+
+  <g transform="translate(780 134)">
+    <rect width="360" height="214" rx="20" fill="#020617" stroke="#334155"/>
+    <rect x="0" y="0" width="360" height="44" rx="20" fill="#111827"/>
+    <circle cx="26" cy="22" r="6" fill="#F87171"/>
+    <circle cx="48" cy="22" r="6" fill="#FBBF24"/>
+    <circle cx="70" cy="22" r="6" fill="#34D399"/>
+    <text x="24" y="78" fill="#A7F3D0" font-family="JetBrains Mono,Consolas,monospace" font-size="15" font-weight="700">$ github:aolingge/mcp-config-doctor --pa...</text>
+    <text x="24" y="118" fill="#34D399" font-family="JetBrains Mono,Consolas,monospace" font-size="15" font-weight="700">PASS</text>
+    <text x="92" y="118" fill="#E5E7EB" font-family="JetBrains Mono,Consolas,monospace" font-size="15">manifest fields valid</text>
+    <text x="24" y="152" fill="#34D399" font-family="JetBrains Mono,Consolas,monospace" font-size="15" font-weight="700">PASS</text>
+    <text x="92" y="152" fill="#E5E7EB" font-family="JetBrains Mono,Consolas,monospace" font-size="15">permissions documented</text>
+    <text x="24" y="186" fill="#FBBF24" font-family="JetBrains Mono,Consolas,monospace" font-size="15" font-weight="700">NOTE</text>
+    <text x="92" y="186" fill="#CBD5E1" font-family="JetBrains Mono,Consolas,monospace" font-size="15">env template safe</text>
   </g>
 </svg>
-

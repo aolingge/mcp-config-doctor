@@ -1,14 +1,30 @@
 <svg width="980" height="430" viewBox="0 0 980 430" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="980" height="430" rx="18" fill="#0B1020"/>
-  <rect x="32" y="32" width="916" height="366" rx="14" fill="#07111F" stroke="#263348"/>
-  <circle cx="64" cy="62" r="7" fill="#FF6B6B"/>
-  <circle cx="88" cy="62" r="7" fill="#FFCF5C"/>
-  <circle cx="112" cy="62" r="7" fill="#36C2A7"/>
-  <text x="62" y="115" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="22">$ npx mcp-config-doctor --config mcp.json</text>
-  <text x="62" y="166" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="20">MCP config score: 88/100</text>
-  <text x="62" y="220" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS  json                 Config is valid JSON</text>
-  <text x="62" y="262" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS  filesystem:path      node is available in PATH</text>
-  <text x="62" y="304" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN  github:secret:TOKEN  Secret-like value found</text>
-  <text x="62" y="346" fill="#9FB0C8" font-family="JetBrains Mono,Consolas,monospace" font-size="18">Fix: Prefer environment references or client secret storage.</text>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="980" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1120"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <filter id="terminalShadow" x="18" y="18" width="944" height="394" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="24" flood-color="#000000" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect width="980" height="430" rx="28" fill="url(#panel)"/>
+  <path d="M0 118h980M0 236h980M0 354h980M166 0v430M332 0v430M498 0v430M664 0v430M830 0v430" stroke="#94A3B8" stroke-opacity=".06"/>
+  <g filter="url(#terminalShadow)">
+    <rect x="44" y="44" width="892" height="342" rx="22" fill="#0F172A" stroke="#334155"/>
+    <rect x="44" y="44" width="892" height="54" rx="22" fill="#111827"/>
+    <circle cx="78" cy="71" r="7" fill="#F87171"/>
+    <circle cx="104" cy="71" r="7" fill="#FBBF24"/>
+    <circle cx="130" cy="71" r="7" fill="#34D399"/>
+    <text x="462" y="77" text-anchor="middle" fill="#94A3B8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="14" font-weight="700">mcp-config-doctor / terminal</text>
+  </g>
+  <text x="78" y="140" fill="#A7F3D0" font-family="JetBrains Mono,Consolas,monospace" font-size="20" font-weight="700">$ npx github:aolingge/mcp-config-doctor --path .</text>
+  <text x="78" y="194" fill="#F8FAFC" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="850">MCP Config Doctor report</text>
+  <rect x="78" y="220" width="824" height="1" fill="#334155"/>
+  <text x="78" y="264" fill="#34D399" font-family="JetBrains Mono,Consolas,monospace" font-size="18" font-weight="700">PASS</text>
+  <text x="164" y="264" fill="#E2E8F0" font-family="JetBrains Mono,Consolas,monospace" font-size="18">manifest fields valid</text>
+  <text x="78" y="306" fill="#34D399" font-family="JetBrains Mono,Consolas,monospace" font-size="18" font-weight="700">PASS</text>
+  <text x="164" y="306" fill="#E2E8F0" font-family="JetBrains Mono,Consolas,monospace" font-size="18">permissions documented</text>
+  <text x="78" y="348" fill="#FBBF24" font-family="JetBrains Mono,Consolas,monospace" font-size="18" font-weight="700">NOTE</text>
+  <text x="164" y="348" fill="#CBD5E1" font-family="JetBrains Mono,Consolas,monospace" font-size="18">env template safe</text>
 </svg>
-
