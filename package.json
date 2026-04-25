@@ -29,5 +29,9 @@
   "bugs": {
     "url": "https://github.com/aolingge/mcp-config-doctor/issues"
   },
-  "homepage": "https://github.com/aolingge/mcp-config-doctor"
+  "homepage": "https://github.com/aolingge/mcp-config-doctor",
+  "files": [
+    "docs",
+    "examples"
+  ]
 }
