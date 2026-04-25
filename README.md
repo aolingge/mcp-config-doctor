@@ -42,25 +42,25 @@ MCP is becoming the standard way to connect AI clients with tools, files, APIs, 
 ## Quick Start
 
 ```bash
-npx mcp-config-doctor --config claude_desktop_config.json
+npx github:aolingge/mcp-config-doctor --config claude_desktop_config.json
 ```
 
 Generate a Markdown report:
 
 ```bash
-npx mcp-config-doctor --config mcp.json --markdown > mcp-report.md
+npx github:aolingge/mcp-config-doctor --config mcp.json --markdown > mcp-report.md
 ```
 
 Use it in CI and fail below a score:
 
 ```bash
-npx mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
+npx github:aolingge/mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
 ```
 
 Run a short startup probe for local stdio servers:
 
 ```bash
-npx mcp-config-doctor --config mcp.json --start
+npx github:aolingge/mcp-config-doctor --config mcp.json --start
 ```
 
 ## Checks
