@@ -1,0 +1,9 @@
+node_modules/
+npm-debug.log*
+coverage/
+dist/
+.DS_Store
+*.local
+*.env
+mcp-report.md
+

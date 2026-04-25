@@ -1,0 +1,35 @@
+<svg width="1280" height="520" viewBox="0 0 1280 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="520" fill="#0B1020"/>
+  <path d="M0 405C146 326 276 332 408 375C575 430 724 461 878 388C1013 324 1133 292 1280 335V520H0V405Z" fill="#12283A"/>
+  <path d="M0 90C170 150 313 152 485 86C654 21 784 22 949 91C1071 142 1167 154 1280 112" stroke="#36C2A7" stroke-width="2" opacity=".35"/>
+  <path d="M0 137C176 199 343 210 525 139C680 79 819 78 974 143C1091 192 1176 201 1280 167" stroke="#FFCF5C" stroke-width="2" opacity=".28"/>
+  <g opacity=".95">
+    <rect x="84" y="76" width="1112" height="368" rx="22" fill="#101827" stroke="#263348"/>
+    <rect x="116" y="112" width="430" height="254" rx="14" fill="#07111F" stroke="#243449"/>
+    <circle cx="146" cy="142" r="8" fill="#FF6B6B"/>
+    <circle cx="172" cy="142" r="8" fill="#FFCF5C"/>
+    <circle cx="198" cy="142" r="8" fill="#36C2A7"/>
+    <text x="146" y="197" fill="#E6F0FF" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="26" font-weight="700">MCP Config Doctor</text>
+    <text x="146" y="238" fill="#9FB0C8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">Diagnose before your AI client fails.</text>
+    <rect x="146" y="278" width="112" height="34" rx="17" fill="#36C2A7"/>
+    <text x="168" y="301" fill="#07111F" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="700">score 92</text>
+    <rect x="270" y="278" width="132" height="34" rx="17" fill="#1B2A3D" stroke="#2D4059"/>
+    <text x="292" y="301" fill="#D6E4F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15">local-first</text>
+    <rect x="414" y="278" width="86" height="34" rx="17" fill="#1B2A3D" stroke="#2D4059"/>
+    <text x="438" y="301" fill="#D6E4F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15">CLI</text>
+  </g>
+  <g>
+    <rect x="610" y="116" width="472" height="288" rx="18" fill="#07111F" stroke="#2D4059"/>
+    <text x="646" y="162" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS</text>
+    <text x="720" y="162" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">json</text>
+    <text x="646" y="211" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS</text>
+    <text x="720" y="211" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">servers</text>
+    <text x="646" y="260" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN</text>
+    <text x="720" y="260" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PATH</text>
+    <text x="646" y="309" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN</text>
+    <text x="720" y="309" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="18">secret-like env</text>
+    <line x1="646" y1="346" x2="1038" y2="346" stroke="#263348"/>
+    <text x="646" y="377" fill="#9FB0C8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="16">Claude Desktop · Cursor · Codex · CI</text>
+  </g>
+</svg>
+

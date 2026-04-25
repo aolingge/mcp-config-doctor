@@ -1,0 +1,14 @@
+<svg width="980" height="430" viewBox="0 0 980 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="980" height="430" rx="18" fill="#0B1020"/>
+  <rect x="32" y="32" width="916" height="366" rx="14" fill="#07111F" stroke="#263348"/>
+  <circle cx="64" cy="62" r="7" fill="#FF6B6B"/>
+  <circle cx="88" cy="62" r="7" fill="#FFCF5C"/>
+  <circle cx="112" cy="62" r="7" fill="#36C2A7"/>
+  <text x="62" y="115" fill="#E6F0FF" font-family="JetBrains Mono,Consolas,monospace" font-size="22">$ npx mcp-config-doctor --config mcp.json</text>
+  <text x="62" y="166" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="20">MCP config score: 88/100</text>
+  <text x="62" y="220" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS  json                 Config is valid JSON</text>
+  <text x="62" y="262" fill="#36C2A7" font-family="JetBrains Mono,Consolas,monospace" font-size="18">PASS  filesystem:path      node is available in PATH</text>
+  <text x="62" y="304" fill="#FFCF5C" font-family="JetBrains Mono,Consolas,monospace" font-size="18">WARN  github:secret:TOKEN  Secret-like value found</text>
+  <text x="62" y="346" fill="#9FB0C8" font-family="JetBrains Mono,Consolas,monospace" font-size="18">Fix: Prefer environment references or client secret storage.</text>
+</svg>
+

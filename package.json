@@ -1,0 +1,33 @@
+{
+  "name": "mcp-config-doctor",
+  "version": "0.1.0",
+  "description": "A local-first CLI that diagnoses MCP config files before your AI client fails to connect.",
+  "type": "module",
+  "bin": {
+    "mcp-config-doctor": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node src/cli.js --config fixtures/valid.mcp.json --min-score 80"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "claude",
+    "cursor",
+    "codex",
+    "developer-tools",
+    "cli"
+  ],
+  "author": "Aolingge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aolingge/mcp-config-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aolingge/mcp-config-doctor/issues"
+  },
+  "homepage": "https://github.com/aolingge/mcp-config-doctor"
+}
