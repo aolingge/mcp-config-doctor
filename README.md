@@ -20,6 +20,8 @@
 
 <p align="center">
   <img alt="Node.js" src="https://img.shields.io/badge/node-%3E%3D18-36C2A7">
+  <a href="https://www.npmjs.com/package/mcp-config-doctor"><img alt="npm" src="https://img.shields.io/npm/v/mcp-config-doctor.svg"></a>
+  <a href="https://github.com/aolingge/mcp-config-doctor/actions/workflows/validate.yml"><img alt="CI" src="https://github.com/aolingge/mcp-config-doctor/actions/workflows/validate.yml/badge.svg"></a>
   <img alt="zero dependency" src="https://img.shields.io/badge/dependencies-0-FFCF5C">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-6AA6FF">
 </p>
@@ -42,25 +44,25 @@ MCP is becoming the standard way to connect AI clients with tools, files, APIs, 
 ## Quick Start
 
 ```bash
-npx github:aolingge/mcp-config-doctor --config claude_desktop_config.json
+npx mcp-config-doctor --config claude_desktop_config.json
 ```
 
 Generate a Markdown report:
 
 ```bash
-npx github:aolingge/mcp-config-doctor --config mcp.json --markdown > mcp-report.md
+npx mcp-config-doctor --config mcp.json --markdown > mcp-report.md
 ```
 
 Use it in CI and fail below a score:
 
 ```bash
-npx github:aolingge/mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
+npx mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
 ```
 
 Run a short startup probe for local stdio servers:
 
 ```bash
-npx github:aolingge/mcp-config-doctor --config mcp.json --start
+npx mcp-config-doctor --config mcp.json --start
 ```
 
 ## Checks
@@ -124,4 +126,5 @@ Use this project as a repeatable gate before an AI agent marks work as done:
 
 - [Quality gate guide](docs/quality-gates.md)
 - [Copy-ready GitHub Actions example](examples/github-action.yml)
-
+- [Release readiness](docs/release-readiness.md)
+- [Launch notes](docs/launch.md)

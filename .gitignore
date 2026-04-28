@@ -2,8 +2,9 @@ node_modules/
 npm-debug.log*
 coverage/
 dist/
+.tmp/
+*.tgz
 .DS_Store
 *.local
 *.env
 mcp-report.md
-
