@@ -31,8 +31,15 @@
   },
   "homepage": "https://github.com/aolingge/mcp-config-doctor",
   "files": [
+    "src",
+    "assets",
     "docs",
     "examples",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
     "CODE_OF_CONDUCT.md"
   ]
 }
