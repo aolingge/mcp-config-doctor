@@ -22,6 +22,7 @@ test('default config candidates include current supported client paths', () => {
 
   assert.deepEqual(win, [
     'C:\\Users\\tester\\AppData\\Roaming\\Claude\\claude_desktop_config.json',
+    'C:\\Users\\tester\\AppData\\Roaming\\Code\\User\\mcp.json',
     'C:\\Users\\tester\\.cursor\\mcp.json',
     'C:\\Users\\tester\\.codex\\mcp.json',
     'C:\\Users\\tester\\.cline\\data\\settings\\cline_mcp_settings.json',
@@ -30,6 +31,7 @@ test('default config candidates include current supported client paths', () => {
 
   assert.deepEqual(mac, [
     path.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+    path.join('/Users/tester', 'Library', 'Application Support', 'Code', 'User', 'mcp.json'),
     path.join('/Users/tester', '.cursor', 'mcp.json'),
     path.join('/Users/tester', '.codex', 'mcp.json'),
     path.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
@@ -38,6 +40,7 @@ test('default config candidates include current supported client paths', () => {
 
   assert.deepEqual(linux, [
     path.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
+    path.join('/home/tester', '.config', 'Code', 'User', 'mcp.json'),
     path.join('/home/tester', '.cursor', 'mcp.json'),
     path.join('/home/tester', '.codex', 'mcp.json'),
     path.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),

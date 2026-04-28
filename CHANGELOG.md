@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Added built-in default config candidates for Cline CLI and Windsurf.
-- Documented the current auto-detection boundary and clarified that VS Code configs still require explicit `--config`.
+- Added stable VS Code user config discovery; workspace and non-default profile configs still require explicit `--config`.
 
 ## 0.1.1
 
