@@ -10,26 +10,45 @@ const secretPatterns = [
   /AKIA[0-9A-Z]{16}/,
 ]
 
-export function defaultConfigCandidates(platform = process.platform, home = os.homedir()) {
+export function defaultConfigCandidates(platform = process.platform, home = os.homedir(), cwd = process.cwd()) {
   const candidates = []
+  const join = platform === 'win32' ? path.win32.join : path.posix.join
 
   if (platform === 'win32') {
     candidates.push(
-      path.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
-      path.join(home, '.cursor', 'mcp.json'),
-      path.join(home, '.codex', 'mcp.json'),
+      join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
+      join(home, 'AppData', 'Roaming', 'Code', 'User', 'globalStorage', 'saoudrizwan.claude-dev', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cursor', 'mcp.json'),
+      join(home, 'AppData', 'Roaming', 'Code', 'User', 'mcp.json'),
+      join(cwd, '.vscode', 'mcp.json'),
+      join(home, '.codeium', 'windsurf', 'mcp_config.json'),
+      join(home, '.codeium', 'mcp_config.json'),
+      join(home, '.codex', 'mcp.json'),
     )
   } else if (platform === 'darwin') {
     candidates.push(
-      path.join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
-      path.join(home, '.cursor', 'mcp.json'),
-      path.join(home, '.codex', 'mcp.json'),
+      join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+      join(home, 'Library', 'Application Support', 'Code', 'User', 'globalStorage', 'saoudrizwan.claude-dev', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cursor', 'mcp.json'),
+      join(home, 'Library', 'Application Support', 'Code', 'User', 'mcp.json'),
+      join(cwd, '.vscode', 'mcp.json'),
+      join(home, '.codeium', 'windsurf', 'mcp_config.json'),
+      join(home, '.codeium', 'mcp_config.json'),
+      join(home, '.codex', 'mcp.json'),
     )
   } else {
     candidates.push(
-      path.join(home, '.config', 'Claude', 'claude_desktop_config.json'),
-      path.join(home, '.cursor', 'mcp.json'),
-      path.join(home, '.codex', 'mcp.json'),
+      join(home, '.config', 'Claude', 'claude_desktop_config.json'),
+      join(home, '.config', 'Code', 'User', 'globalStorage', 'saoudrizwan.claude-dev', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+      join(home, '.cursor', 'mcp.json'),
+      join(home, '.config', 'Code', 'User', 'mcp.json'),
+      join(cwd, '.vscode', 'mcp.json'),
+      join(home, '.codeium', 'windsurf', 'mcp_config.json'),
+      join(home, '.codeium', 'mcp_config.json'),
+      join(home, '.codex', 'mcp.json'),
     )
   }
 
