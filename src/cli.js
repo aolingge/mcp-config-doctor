@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import process from 'node:process'
-import { defaultConfigCandidates, diagnoseConfig, formatAnnotations, formatMarkdown, formatSarif, formatText } from './doctor.js'
+import { defaultConfigCandidates, diagnoseConfig, formatAnnotations, formatMarkdown, formatSarif, formatText, redactReport } from './doctor.js'
 
 const VERSION = '0.1.0'
 
@@ -75,7 +75,7 @@ try {
 
   const report = diagnoseConfig(configPath, { start: args.start })
 
-  if (args.json) console.log(JSON.stringify(report, null, 2))
+  if (args.json) console.log(JSON.stringify(redactReport(report), null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))
   else if (args.sarif) console.log(JSON.stringify(formatSarif(report), null, 2))
   else if (args.annotations) console.log(formatAnnotations(report))

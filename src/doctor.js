@@ -10,6 +10,9 @@ const secretPatterns = [
   /AKIA[0-9A-Z]{16}/,
 ]
 
+const secretKeyPattern = /(?:api[_-]?key|token|secret|password|credential)/i
+const REDACTED = '[REDACTED]'
+
 export function defaultConfigCandidates(platform = process.platform, home = os.homedir()) {
   const candidates = []
 
@@ -66,6 +69,28 @@ function commandExists(command) {
 function hasSecretLikeValue(value) {
   if (typeof value !== 'string') return false
   return secretPatterns.some((pattern) => pattern.test(value))
+}
+
+export function redactReportText(value) {
+  if (typeof value !== 'string') return value
+  return secretPatterns.reduce((redacted, pattern) => redacted.replace(new RegExp(pattern.source, 'g'), REDACTED), value)
+}
+
+export function redactReport(value, key = '') {
+  if (typeof value === 'string') {
+    if (secretKeyPattern.test(key) && value.length > 0) return REDACTED
+    return redactReportText(value)
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => redactReport(item))
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([entryKey, entryValue]) => [entryKey, redactReport(entryValue, entryKey)]))
+  }
+
+  return value
 }
 
 function makeResult(status, check, message, fix = null) {
@@ -173,6 +198,7 @@ export function scoreResults(results) {
 }
 
 export function formatText(report) {
+  report = redactReport(report)
   const lines = [`MCP config score: ${report.score}/100`, `File: ${report.file}`, '']
   for (const result of report.results) {
     lines.push(`${result.status.padEnd(5)} ${result.check.padEnd(22)} ${result.message}`)
@@ -182,6 +208,7 @@ export function formatText(report) {
 }
 
 export function formatMarkdown(report) {
+  report = redactReport(report)
   const rows = report.results
     .map((result) => `| ${result.status} | ${result.check} | ${result.message} | ${result.fix ?? ''} |`)
     .join('\n')
@@ -198,6 +225,7 @@ ${rows}
 }
 
 export function formatAnnotations(report) {
+  report = redactReport(report)
   return report.results
     .filter((result) => result.status !== 'PASS')
     .map((result) => `::warning file=${report.file},title=${result.check}::${result.message}${result.fix ? ` Fix: ${result.fix}` : ''}`)
@@ -205,6 +233,7 @@ export function formatAnnotations(report) {
 }
 
 export function formatSarif(report) {
+  report = redactReport(report)
   return {
     version: '2.1.0',
     $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
