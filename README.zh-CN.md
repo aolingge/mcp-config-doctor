@@ -63,6 +63,12 @@ npx mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
 npx mcp-config-doctor --config mcp.json --start
 ```
 
+对本地 stdio server 做 MCP initialize 握手探测：
+
+```bash
+npx mcp-config-doctor --config mcp.json --initialize
+```
+
 ## 检查项
 
 | 检查 | 能发现什么 | 为什么重要 |
@@ -75,6 +81,7 @@ npx mcp-config-doctor --config mcp.json --start
 | `env` type | 环境变量格式错误 | 会导致 server 启动失败 |
 | Secret-like values | token 被直接写进配置 | 分享报告前需要先脱敏 |
 | Startup probe | 进程一启动就退出 | 提前发现本地 stdio server 问题 |
+| Initialize probe | 没有 MCP initialize 响应 | 在客户端启动前确认本地 stdio server 会说 MCP |
 
 ## 示例配置
 
@@ -99,10 +106,11 @@ npx mcp-config-doctor --config mcp.json --start
 
 这是配置体检工具，不是完整安全扫描器。它能发现常见配置错误和明显的 secret-like 字符串，但不能证明某个 MCP server 一定安全。安装任何能读文件、执行命令或访问私有 API 的 server 前，都应该先看源码和权限范围。
 
+`--start` 和 `--initialize` 都是显式开启的选项，因为它们会执行配置里的本地 server 命令。`--initialize` 只会通过 stdio 发送一个最小 MCP `initialize` JSON-RPC 请求并短暂等待响应；它不会调用工具、读取资源，也不会上传你的配置。
+
 ## Roadmap
 
 - 补充 Claude Desktop、Cursor、Codex、Cline、Windsurf 的默认配置路径。
-- 增加 MCP `initialize` 握手探测。
 - 增加 SARIF 和 GitHub Actions 注释输出。
 - 增加报告脱敏助手，方便公开发 Issue。
 - 收集更多真实配置样例作为 fixtures。
