@@ -65,6 +65,12 @@ Run a short startup probe for local stdio servers:
 npx mcp-config-doctor --config mcp.json --start
 ```
 
+Run an MCP initialize handshake probe for local stdio servers:
+
+```bash
+npx mcp-config-doctor --config mcp.json --initialize
+```
+
 ## Checks
 
 | Check | What it catches | Why it matters |
@@ -77,6 +83,7 @@ npx mcp-config-doctor --config mcp.json --start
 | `env` type | Wrong environment format | Prevents server startup |
 | Secret-like values | Tokens pasted into config | Keeps public reports safer |
 | Startup probe | Immediate process exit | Finds broken local stdio servers early |
+| Initialize probe | Missing MCP initialize response | Confirms a local stdio server speaks MCP before a client starts it |
 
 ## Example Config
 
@@ -101,10 +108,11 @@ npx mcp-config-doctor --config mcp.json --start
 
 This tool is a config doctor, not a security scanner. It detects common setup mistakes and obvious secret-like strings, but it does not prove that an MCP server is safe. Review every server you install, especially tools that can read files, run commands, or access private APIs.
 
+`--start` and `--initialize` are explicit opt-ins because they execute local server commands from your config. `--initialize` sends only a minimal MCP `initialize` JSON-RPC request over stdio and waits briefly for a response; it does not call tools, read resources, or send your config anywhere.
+
 ## Roadmap
 
 - More built-in config path detection for Claude Desktop, Cursor, Codex, Cline, and Windsurf.
-- MCP `initialize` handshake probe for stdio servers.
 - SARIF and GitHub Actions annotations.
 - Safer redaction helper for sharing reports publicly.
 - More real-world fixtures from community pull requests.

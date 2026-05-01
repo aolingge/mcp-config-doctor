@@ -3,6 +3,8 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 
+const initializeProtocolVersion = '2025-11-25'
+
 const secretPatterns = [
   /sk-[A-Za-z0-9_-]{20,}/,
   /github_pat_[A-Za-z0-9_]{20,}/,
@@ -72,9 +74,73 @@ function makeResult(status, check, message, fix = null) {
   return { status, check, message, fix }
 }
 
+function makeInitializeRequest() {
+  return `${JSON.stringify({
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'initialize',
+    params: {
+      protocolVersion: initializeProtocolVersion,
+      capabilities: {},
+      clientInfo: {
+        name: 'mcp-config-doctor',
+        version: '0.1.1',
+      },
+    },
+  })}\n`
+}
+
+function findJsonRpcResponse(stdout, id) {
+  for (const line of String(stdout ?? '').split(/\r?\n/)) {
+    const candidate = line.trim()
+    if (!candidate.startsWith('{')) continue
+
+    try {
+      const message = JSON.parse(candidate)
+      if (message?.id === id) return message
+    } catch {
+      // Ignore non-JSON stdout lines; many local tools print banners.
+    }
+  }
+
+  return null
+}
+
+function runInitializeProbe(server, env, options) {
+  const args = Array.isArray(server.args) ? server.args : []
+  const result = spawnSync(server.command, args, {
+    env: { ...process.env, ...env },
+    timeout: options.timeoutMs ?? 2500,
+    input: makeInitializeRequest(),
+    encoding: 'utf8',
+  })
+
+  const response = findJsonRpcResponse(result.stdout, 1)
+  if (response?.result) {
+    const protocolVersion = response.result.protocolVersion ? ` (${response.result.protocolVersion})` : ''
+    return makeResult('PASS', 'initialize', `MCP initialize handshake succeeded${protocolVersion}`)
+  }
+
+  if (response?.error) {
+    const message = response.error.message ?? JSON.stringify(response.error)
+    return makeResult('FAIL', 'initialize', `MCP initialize returned an error: ${message}`, 'Run the server manually and inspect its MCP initialization handling.')
+  }
+
+  if (result.error?.code === 'ETIMEDOUT') {
+    return makeResult('WARN', 'initialize', 'No MCP initialize response before timeout', 'Confirm the command starts an MCP stdio server and does not wait for interactive input.')
+  }
+
+  if (result.error) {
+    return makeResult('WARN', 'initialize', `Initialize probe could not start process: ${result.error.message}`, 'Run the command manually to inspect the startup failure.')
+  }
+
+  return makeResult('WARN', 'initialize', `Process exited with code ${result.status} before an MCP initialize response`, 'Run the command manually to inspect stdout and stderr.')
+}
+
 export function diagnoseConfig(configPath, options = {}) {
   const results = []
   const startChecks = options.start === true
+  const initializeChecks = options.initialize === true
   let loaded
 
   try {
@@ -144,7 +210,11 @@ export function diagnoseConfig(configPath, options = {}) {
       }
     }
 
-    if (startChecks && server.command && typeof server.command === 'string' && commandExists(server.command)) {
+    if (initializeChecks && server.command && typeof server.command === 'string' && commandExists(server.command)) {
+      const args = Array.isArray(server.args) ? server.args : []
+      const result = runInitializeProbe({ ...server, args }, env, options)
+      results.push({ ...result, check: `${name}:${result.check}` })
+    } else if (startChecks && server.command && typeof server.command === 'string' && commandExists(server.command)) {
       const args = Array.isArray(server.args) ? server.args : []
       const result = spawnSync(server.command, args, {
         env: { ...process.env, ...env },

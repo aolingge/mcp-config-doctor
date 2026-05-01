@@ -14,6 +14,7 @@ function parseArgs(argv) {
     sarif: false,
     annotations: false,
     start: false,
+    initialize: false,
     version: false,
   }
 
@@ -26,6 +27,7 @@ function parseArgs(argv) {
     else if (item === '--sarif') args.sarif = true
     else if (item === '--annotations') args.annotations = true
     else if (item === '--start') args.start = true
+    else if (item === '--initialize') args.initialize = true
     else if (item === '--version') args.version = true
     else if (item === '-h' || item === '--help') args.help = true
     else throw new Error(`Unknown option: ${item}`)
@@ -39,11 +41,13 @@ function help() {
 Usage:
   mcp-config-doctor --config claude_desktop_config.json
   mcp-config-doctor --config mcp.json --start
+  mcp-config-doctor --config mcp.json --initialize
   mcp-config-doctor --markdown > mcp-report.md
 
 Options:
   --config FILE      MCP client config file
   --start            run a short startup probe for local stdio servers
+  --initialize       launch local stdio servers and send a minimal MCP initialize request
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
   --json             print raw JSON report
@@ -73,7 +77,7 @@ try {
     throw new Error('No config found. Pass --config path/to/mcp.json')
   }
 
-  const report = diagnoseConfig(configPath, { start: args.start })
+  const report = diagnoseConfig(configPath, { start: args.start, initialize: args.initialize })
 
   if (args.json) console.log(JSON.stringify(report, null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))
