@@ -12,16 +12,17 @@ const secretPatterns = [
 
 export function defaultConfigCandidates(platform = process.platform, home = os.homedir()) {
   const candidates = []
+  const pathApi = platform === 'win32' ? path.win32 : path
   const sharedCandidates = [
-    path.join(home, '.cursor', 'mcp.json'),
-    path.join(home, '.codex', 'mcp.json'),
-    path.join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
-    path.join(home, '.codeium', 'windsurf', 'mcp_config.json'),
+    pathApi.join(home, '.cursor', 'mcp.json'),
+    pathApi.join(home, '.codex', 'mcp.json'),
+    pathApi.join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    pathApi.join(home, '.codeium', 'windsurf', 'mcp_config.json'),
   ]
 
   if (platform === 'win32') {
     candidates.push(
-      path.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
       ...sharedCandidates,
     )
   } else if (platform === 'darwin') {
