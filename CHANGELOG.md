@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added built-in default config candidates for Cline CLI and Windsurf.
+- Documented the current auto-detection boundary and clarified that VS Code configs still require explicit `--config`.
+
 ## 0.1.1
 
 - Published the npm-ready package path for `npx mcp-config-doctor`.

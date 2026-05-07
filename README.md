@@ -65,6 +65,8 @@ Run a short startup probe for local stdio servers:
 npx mcp-config-doctor --config mcp.json --start
 ```
 
+Auto-detection currently looks for common home-directory config files for Claude Desktop, Cursor, Codex, Cline CLI, and Windsurf. For VS Code workspace or profile configs, pass `--config` explicitly for now. See [docs/config-paths.md](docs/config-paths.md) for the current path table.
+
 ## Checks
 
 | Check | What it catches | Why it matters |
@@ -103,7 +105,7 @@ This tool is a config doctor, not a security scanner. It detects common setup mi
 
 ## Roadmap
 
-- More built-in config path detection for Claude Desktop, Cursor, Codex, Cline, and Windsurf.
+- Add built-in VS Code workspace and user-profile MCP config discovery.
 - MCP `initialize` handshake probe for stdio servers.
 - SARIF and GitHub Actions annotations.
 - Safer redaction helper for sharing reports publicly.
