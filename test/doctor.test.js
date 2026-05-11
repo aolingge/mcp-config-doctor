@@ -15,6 +15,14 @@ test('reports missing command and bad args', () => {
   assert.ok(weak.results.some((result) => result.check === 'broken:path' && result.status === 'WARN'))
 })
 
+test('warns when server scope or permissions are not documented', () => {
+  const weak = diagnoseConfig('fixtures/weak.mcp.json')
+  const strong = diagnoseConfig('fixtures/valid.mcp.json')
+
+  assert.ok(weak.results.some((result) => result.check === 'broken:permissions' && result.status === 'WARN'))
+  assert.equal(strong.results.some((result) => result.check.endsWith(':permissions') && result.status === 'WARN'), false)
+})
+
 test('default config candidates include current supported client paths', () => {
   const win = defaultConfigCandidates('win32', 'C:\\Users\\tester')
   const mac = defaultConfigCandidates('darwin', '/Users/tester')

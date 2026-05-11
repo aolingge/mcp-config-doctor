@@ -77,6 +77,7 @@ Auto-detection currently looks for common home-directory config files for Claude
 | PATH lookup | Command is not installed or not visible | A server can work in your terminal but fail in the client |
 | `args` type | String instead of array | Common copy-paste mistake |
 | `env` type | Wrong environment format | Prevents server startup |
+| Permissions / scope signal | Missing access boundary in a server entry | Makes file, network, shell, browser, or API access easier to review |
 | Secret-like values | Tokens pasted into config | Keeps public reports safer |
 | Startup probe | Immediate process exit | Finds broken local stdio servers early |
 
@@ -88,12 +89,14 @@ Auto-detection currently looks for common home-directory config files for Claude
     "filesystem": {
       "command": "node",
       "args": ["server.js"],
+      "permissions": ["filesystem:read"],
       "env": {
         "ROOT": "."
       }
     },
     "remote-api": {
-      "url": "https://example.com/mcp"
+      "url": "https://example.com/mcp",
+      "scope": "remote API access"
     }
   }
 }

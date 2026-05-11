@@ -72,6 +72,12 @@ function hasSecretLikeValue(value) {
   return secretPatterns.some((pattern) => pattern.test(value))
 }
 
+function hasPermissionSignal(server) {
+  if (!server || typeof server !== 'object') return false
+  const directKeys = ['permissions', 'permission', 'scope', 'scopes', 'read', 'write', 'tools']
+  return directKeys.some((key) => Object.prototype.hasOwnProperty.call(server, key))
+}
+
 function makeResult(status, check, message, fix = null) {
   return { status, check, message, fix }
 }
@@ -132,6 +138,17 @@ export function diagnoseConfig(configPath, options = {}) {
 
     if (server.args && !Array.isArray(server.args)) {
       results.push(makeResult('FAIL', `${name}:args`, 'args must be an array', 'Use "args": ["arg1", "arg2"].'))
+    }
+
+    if (hasPermissionSignal(server)) {
+      results.push(makeResult('PASS', `${name}:permissions`, 'permissions or scope signal is documented'))
+    } else {
+      results.push(makeResult(
+        'WARN',
+        `${name}:permissions`,
+        'No permissions or scope signal found',
+        'Document expected filesystem, network, shell, browser, or API access for this MCP server.',
+      ))
     }
 
     if (server.env && typeof server.env !== 'object') {
