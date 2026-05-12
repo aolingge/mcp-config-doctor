@@ -6,9 +6,64 @@ import { spawnSync } from 'node:child_process'
 const secretPatterns = [
   /sk-[A-Za-z0-9_-]{20,}/,
   /github_pat_[A-Za-z0-9_]{20,}/,
+  /gitee_[A-Za-z0-9_]{20,}/,
   /ghp_[A-Za-z0-9]{20,}/,
   /AKIA[0-9A-Z]{16}/,
 ]
+const secretLikePattern = /(ghp_|github_pat_|gitee_[A-Za-z0-9_]*|sk-[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16})[A-Za-z0-9_-]*/g
+const assignmentSecretPattern = /(token|password|secret|cookie)\s*[:=]\s*[^\s]+/gi
+
+const profileChecks = {
+  manifest: {
+    title: 'MCP Manifest Lint',
+    checks: [
+      ['name', 'name|id|名称', 'Has server name or id.'],
+      ['transport', 'stdio|http|sse|transport|传输', 'Mentions transport.'],
+      ['target', 'command|url|endpoint|args|目标|命令', 'Has command or URL target.'],
+      ['permissions', 'permission|scope|read|write|权限|范围', 'Mentions permissions.'],
+    ],
+  },
+  'permission-matrix': {
+    title: 'MCP Permission Matrix',
+    readTarget: true,
+    checks: [
+      ['tool', 'tool|command|function|工具|命令', 'Lists tools or commands.'],
+      ['permission', 'permission|scope|read|write|权限|范围', 'Lists permissions.'],
+      ['data', 'data|file|network|secret|数据|文件|网络|密钥', 'Documents data access.'],
+      ['risk', 'risk|safe|danger|风险|安全', 'Explains risks.'],
+    ],
+  },
+  'env-template': {
+    title: 'MCP Env Template Check',
+    checks: [
+      ['placeholder', 'YOUR_|<.*>|example|placeholder|示例|占位', 'Uses placeholders instead of real values.'],
+      ['mcp-key', 'MCP|SERVER|TRANSPORT|PORT|TOKEN|API', 'Contains MCP-related environment keys.'],
+      ['comments', '#|description|说明', 'Explains what values mean.'],
+      ['no-secret', 'REDACTION_SPECIAL', 'Does not contain obvious raw secrets.'],
+    ],
+  },
+  'tool-name': {
+    title: 'MCP Tool Name Lint',
+    checks: [
+      ['has-tools', 'tools?|name|description|工具|名称', 'Contains tool names and descriptions.'],
+      ['specific', 'read_|write_|list_|search_|create_|delete_|get_|update_', 'Uses action-oriented names.'],
+      ['description', 'description|desc|说明|描述', 'Includes descriptions.'],
+      ['risk', 'delete|write|exec|shell|run|danger|删除|执行', 'Makes risky tools visible.'],
+    ],
+  },
+  'server-smoke': {
+    title: 'MCP Server Smoke Test',
+    readTarget: true,
+    checks: [
+      ['start', 'start|run|stdio|http|启动|运行', 'Explains how to start.'],
+      ['tools', 'list tools|tools/list|tool list|工具列表', 'Checks tool listing.'],
+      ['call', 'call|invoke|sample|example|调用|示例', 'Includes a sample call.'],
+      ['failure', 'error|timeout|fail|失败|超时', 'Explains failure handling.'],
+    ],
+  },
+}
+
+export const PROFILE_NAMES = ['config', ...Object.keys(profileChecks)]
 
 export function defaultConfigCandidates(platform = process.platform, home = os.homedir()) {
   const candidates = []
@@ -80,6 +135,62 @@ function hasPermissionSignal(server) {
 
 function makeResult(status, check, message, fix = null) {
   return { status, check, message, fix }
+}
+
+function redactText(text) {
+  return text
+    .replace(secretLikePattern, '[REDACTED_SECRET]')
+    .replace(assignmentSecretPattern, '$1=[REDACTED]')
+}
+
+function listReadableFiles(root) {
+  const files = []
+  function visit(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const fullPath = path.join(directory, entry.name)
+      if (entry.isDirectory()) visit(fullPath)
+      else if (entry.isFile() && /\.(md|txt|json|ya?ml|log|env|js|ts)$/i.test(fullPath)) files.push(fullPath)
+      if (files.length >= 120) return
+    }
+  }
+  visit(root)
+  return files
+}
+
+function readTarget(target) {
+  const stat = fs.statSync(target)
+  if (!stat.isDirectory()) return fs.readFileSync(target, 'utf8')
+
+  return listReadableFiles(target)
+    .map((file) => `\n--- ${path.relative(target, file)} ---\n${fs.readFileSync(file, 'utf8')}`)
+    .join('\n')
+}
+
+export function diagnoseProfileText(text, target = '<inline>', profile = 'manifest') {
+  const config = profileChecks[profile]
+  if (!config) throw new Error(`Unknown profile "${profile}". Use one of: ${PROFILE_NAMES.join(', ')}`)
+  const source = redactText(text)
+  const results = config.checks.map(([id, pattern, message]) => {
+    const ok = pattern === 'REDACTION_SPECIAL'
+      ? !secretPatterns.some((secretPattern) => secretPattern.test(text))
+      : new RegExp(pattern, 'i').test(source)
+    return makeResult(ok ? 'PASS' : 'FAIL', id, ok ? message : `Missing signal: ${message}`)
+  })
+  return {
+    file: target,
+    profile,
+    title: config.title,
+    score: scoreResults(results),
+    results,
+    redacted: source,
+  }
+}
+
+export function diagnoseProfile(target, profile = 'manifest') {
+  const config = profileChecks[profile]
+  if (!config) throw new Error(`Unknown profile "${profile}". Use one of: ${PROFILE_NAMES.join(', ')}`)
+  const text = config.readTarget ? readTarget(target) : fs.readFileSync(target, 'utf8')
+  return diagnoseProfileText(text, target, profile)
 }
 
 export function diagnoseConfig(configPath, options = {}) {
@@ -194,7 +305,8 @@ export function scoreResults(results) {
 }
 
 export function formatText(report) {
-  const lines = [`MCP config score: ${report.score}/100`, `File: ${report.file}`, '']
+  const title = report.title ?? 'MCP config'
+  const lines = [`${title} score: ${report.score}/100`, `File: ${report.file}`, '']
   for (const result of report.results) {
     lines.push(`${result.status.padEnd(5)} ${result.check.padEnd(22)} ${result.message}`)
     if (result.fix) lines.push(`      Fix: ${result.fix}`)
@@ -203,10 +315,11 @@ export function formatText(report) {
 }
 
 export function formatMarkdown(report) {
+  const title = report.title ?? 'MCP Config Doctor'
   const rows = report.results
     .map((result) => `| ${result.status} | ${result.check} | ${result.message} | ${result.fix ?? ''} |`)
     .join('\n')
-  return `# MCP Config Doctor Report
+  return `# ${title} Report
 
 Score: **${report.score}/100**
 

@@ -65,9 +65,32 @@ Run a short startup probe for local stdio servers:
 npx mcp-config-doctor --config mcp.json --start
 ```
 
+Use a focused profile when replacing one of the smaller MCP helper repos:
+
+```bash
+npx mcp-config-doctor --path manifest.json --profile manifest
+npx mcp-config-doctor --path README.md --profile permission-matrix
+npx mcp-config-doctor --path .env.example --profile env-template
+npx mcp-config-doctor --path tools.md --profile tool-name
+npx mcp-config-doctor --path docs/ --profile server-smoke
+```
+
 Auto-detection currently looks for common home-directory config files for Claude Desktop, Cursor, Codex, Cline CLI, and Windsurf. For VS Code workspace or profile configs, pass `--config` explicitly for now. See [docs/config-paths.md](docs/config-paths.md) for the current path table.
 
+## Profiles
+
+| Profile | Replaces small tool | Best for |
+| --- | --- | --- |
+| config | mcp-config-doctor | MCP client config diagnosis. |
+| manifest | mcp-manifest-lint | MCP manifest snippets. |
+| permission-matrix | mcp-permission-matrix | Tool permission and risk docs. |
+| env-template | mcp-env-template-check | Shareable `.env.example` files. |
+| tool-name | mcp-tool-name-lint | Action-oriented MCP tool naming. |
+| server-smoke | mcp-server-smoke-test | Startup, tool listing, sample call, and failure docs. |
+
 ## Checks
+
+The default `config` profile checks:
 
 | Check | What it catches | Why it matters |
 | --- | --- | --- |
