@@ -78,16 +78,19 @@ export function defaultConfigCandidates(platform = process.platform, home = os.h
   if (platform === 'win32') {
     candidates.push(
       pathApi.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, 'AppData', 'Roaming', 'Code', 'User', 'mcp.json'),
       ...sharedCandidates,
     )
   } else if (platform === 'darwin') {
     candidates.push(
-      path.join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, 'Library', 'Application Support', 'Code', 'User', 'mcp.json'),
       ...sharedCandidates,
     )
   } else {
     candidates.push(
-      path.join(home, '.config', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, '.config', 'Claude', 'claude_desktop_config.json'),
+      pathApi.join(home, '.config', 'Code', 'User', 'mcp.json'),
       ...sharedCandidates,
     )
   }

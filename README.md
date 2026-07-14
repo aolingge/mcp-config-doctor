@@ -75,7 +75,7 @@ npx mcp-config-doctor --path tools.md --profile tool-name
 npx mcp-config-doctor --path docs/ --profile server-smoke
 ```
 
-Auto-detection currently looks for common home-directory config files for Claude Desktop, Cursor, Codex, Cline CLI, and Windsurf. For VS Code workspace or profile configs, pass `--config` explicitly for now. See [docs/config-paths.md](docs/config-paths.md) for the current path table.
+Auto-detection currently looks for common home-directory config files for Claude Desktop, stable VS Code user settings, Cursor, Codex, Cline CLI, and Windsurf. For VS Code workspace or non-default profile configs, pass `--config` explicitly for now. See [docs/config-paths.md](docs/config-paths.md) for the current path table.
 
 ## Profiles
 
@@ -131,7 +131,7 @@ This tool is a config doctor, not a security scanner. It detects common setup mi
 
 ## Roadmap
 
-- Add built-in VS Code workspace and user-profile MCP config discovery.
+- Add built-in VS Code workspace and non-default profile MCP config discovery.
 - MCP `initialize` handshake probe for stdio servers.
 - SARIF and GitHub Actions annotations.
 - Safer redaction helper for sharing reports publicly.
