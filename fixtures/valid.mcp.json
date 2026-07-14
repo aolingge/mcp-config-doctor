@@ -3,12 +3,14 @@
     "filesystem": {
       "command": "node",
       "args": ["server.js"],
+      "permissions": ["filesystem:read"],
       "env": {
         "ROOT": "."
       }
     },
     "remote-demo": {
-      "url": "https://example.com/mcp"
+      "url": "https://example.com/mcp",
+      "scope": "remote api access"
     }
   }
 }

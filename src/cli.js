@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import process from 'node:process'
-import { defaultConfigCandidates, diagnoseConfig, formatAnnotations, formatMarkdown, formatSarif, formatText } from './doctor.js'
+import { defaultConfigCandidates, diagnoseConfig, diagnoseProfile, formatAnnotations, formatMarkdown, formatSarif, formatText, PROFILE_NAMES } from './doctor.js'
 
 const VERSION = '0.1.0'
 
 function parseArgs(argv) {
   const args = {
     config: null,
+    path: null,
+    profile: 'config',
     minScore: 70,
     markdown: false,
     json: false,
@@ -20,6 +22,8 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const item = argv[index]
     if (item === '--config') args.config = argv[++index]
+    else if (item === '--path') args.path = argv[++index]
+    else if (item === '--profile') args.profile = argv[++index]
     else if (item === '--min-score') args.minScore = Number(argv[++index])
     else if (item === '--markdown') args.markdown = true
     else if (item === '--json') args.json = true
@@ -39,10 +43,13 @@ function help() {
 Usage:
   mcp-config-doctor --config claude_desktop_config.json
   mcp-config-doctor --config mcp.json --start
+  mcp-config-doctor --path manifest.json --profile manifest
   mcp-config-doctor --markdown > mcp-report.md
 
 Options:
   --config FILE      MCP client config file
+  --path FILE_OR_DIR file or directory for non-config profiles
+  --profile NAME     profile: ${PROFILE_NAMES.join(', ')}
   --start            run a short startup probe for local stdio servers
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
@@ -68,12 +75,16 @@ try {
     process.exit(0)
   }
 
-  const configPath = args.config ?? findConfig()
-  if (!configPath) {
-    throw new Error('No config found. Pass --config path/to/mcp.json')
+  const target = args.config ?? args.path ?? (args.profile === 'config' ? findConfig() : null)
+  if (!target) {
+    throw new Error(args.profile === 'config'
+      ? 'No config found. Pass --config path/to/mcp.json'
+      : 'No target found. Pass --path file-or-directory')
   }
 
-  const report = diagnoseConfig(configPath, { start: args.start })
+  const report = args.profile === 'config'
+    ? diagnoseConfig(target, { start: args.start })
+    : diagnoseProfile(target, args.profile)
 
   if (args.json) console.log(JSON.stringify(report, null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))

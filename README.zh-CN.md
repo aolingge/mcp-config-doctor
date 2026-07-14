@@ -63,7 +63,30 @@ npx mcp-config-doctor --config fixtures/valid.mcp.json --min-score 80
 npx mcp-config-doctor --config mcp.json --start
 ```
 
+需要替代原来的 MCP 小工具时，可以选择更聚焦的 profile：
+
+```bash
+npx mcp-config-doctor --path manifest.json --profile manifest
+npx mcp-config-doctor --path README.md --profile permission-matrix
+npx mcp-config-doctor --path .env.example --profile env-template
+npx mcp-config-doctor --path tools.md --profile tool-name
+npx mcp-config-doctor --path docs/ --profile server-smoke
+```
+
+## Profiles
+
+| Profile | 可替代的小工具 | 适合检查 |
+| --- | --- | --- |
+| config | mcp-config-doctor | MCP 客户端配置体检。 |
+| manifest | mcp-manifest-lint | MCP manifest 片段。 |
+| permission-matrix | mcp-permission-matrix | 工具权限和风险说明。 |
+| env-template | mcp-env-template-check | 可公开分享的 `.env.example`。 |
+| tool-name | mcp-tool-name-lint | MCP tool 命名是否动作化。 |
+| server-smoke | mcp-server-smoke-test | 启动、工具列表、调用示例和失败处理文档。 |
+
 ## 检查项
+
+默认 `config` profile 检查：
 
 | 检查 | 能发现什么 | 为什么重要 |
 | --- | --- | --- |
@@ -73,6 +96,7 @@ npx mcp-config-doctor --config mcp.json --start
 | PATH lookup | 命令没安装或客户端找不到 | 终端能跑，不代表客户端能跑 |
 | `args` type | 把数组写成字符串 | 复制示例时最常见 |
 | `env` type | 环境变量格式错误 | 会导致 server 启动失败 |
+| Permissions / scope signal | server 没写访问边界 | 方便 review 文件、网络、shell、浏览器或 API 权限 |
 | Secret-like values | token 被直接写进配置 | 分享报告前需要先脱敏 |
 | Startup probe | 进程一启动就退出 | 提前发现本地 stdio server 问题 |
 
@@ -84,12 +108,14 @@ npx mcp-config-doctor --config mcp.json --start
     "filesystem": {
       "command": "node",
       "args": ["server.js"],
+      "permissions": ["filesystem:read"],
       "env": {
         "ROOT": "."
       }
     },
     "remote-api": {
-      "url": "https://example.com/mcp"
+      "url": "https://example.com/mcp",
+      "scope": "remote API access"
     }
   }
 }
