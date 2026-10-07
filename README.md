@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-banner.svg" alt="MCP Config Doctor banner" width="100%">
+  <img src="https://raw.githubusercontent.com/aolingge/aolingge/main/assets/developer-cover.png" alt="MCP Config Doctor banner" width="100%">
 </p>
 
 <h1 align="center">MCP Config Doctor</h1>
@@ -25,6 +25,15 @@
   <img alt="zero dependency" src="https://img.shields.io/badge/dependencies-0-FFCF5C">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-6AA6FF">
 </p>
+
+## Project guide
+
+| Area | Details |
+| --- | --- |
+| **For** | Developers configuring MCP servers for Claude Desktop, Cursor, Codex or other compatible clients. |
+| **Coverage** | Configuration shape, command availability, arguments, environment settings, URLs and obvious secret leaks. |
+| **Output** | Terminal, JSON or Markdown diagnostics generated locally; server trust still requires separate review. |
+| **Start** | [Quick start](#quick-start) · [Client profiles](#profiles) · [Checks](#checks) |
 
 ## Why This Exists
 
