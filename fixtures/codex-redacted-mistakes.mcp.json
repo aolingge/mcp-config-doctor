@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "repo-tools": {
+      "command": "node",
+      "args": ["./scripts/mcp-server.js"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_FAKEEXAMPLETOKEN123456",
+        "WORKSPACE_ROOT": "./workspace"
+      }
+    },
+    "broken-codex-helper": {
+      "command": "definitely-not-a-real-mcp-command",
+      "args": ["--stdio"],
+      "env": {
+        "OPENAI_API_KEY": ""
+      }
+    }
+  }
+}
