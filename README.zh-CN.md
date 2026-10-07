@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/readme-banner.svg" alt="MCP Config Doctor banner" width="100%">
+  <img src="https://raw.githubusercontent.com/aolingge/aolingge/main/assets/developer-cover.png" alt="MCP Config Doctor banner" width="100%">
 </p>
 
 <h1 align="center">MCP Config Doctor</h1>
@@ -23,6 +23,15 @@
   <img alt="zero dependency" src="https://img.shields.io/badge/dependencies-0-FFCF5C">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-6AA6FF">
 </p>
+
+## 项目速览
+
+| 项目 | 说明 |
+| --- | --- |
+| **适合谁** | 为 Claude Desktop、Cursor、Codex 等客户端配置 MCP 的开发者。 |
+| **检查范围** | 配置结构、命令可用性、参数、环境设置、URL 与明显凭据泄露。 |
+| **输出** | 在本地生成终端、JSON 或 Markdown 诊断；服务本身是否可信仍需单独审查。 |
+| **入口** | [English 快速开始](README.md#quick-start) · [检查范围](README.md#checks) |
 
 ## 为什么做这个
 
