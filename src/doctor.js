@@ -115,10 +115,28 @@ export function extractServers(json) {
 }
 
 function commandExists(command) {
-  const probe = process.platform === 'win32' ? 'where' : 'command'
-  const args = process.platform === 'win32' ? [command] : ['-v', command]
-  const result = spawnSync(probe, args, { shell: process.platform !== 'win32', stdio: 'ignore' })
-  return result.status === 0
+  const windows = process.platform === 'win32'
+  const hasPath = command.includes('/') || (windows && command.includes('\\'))
+  const searchPath = (process.env.PATH ?? (windows ? '' : '/usr/bin:/bin')).split(path.delimiter)
+  const directories = hasPath ? [''] : windows ? [process.cwd(), ...searchPath] : searchPath
+  const suffixes = windows && !path.extname(command)
+    ? ['', ...(process.env.PATHEXT ?? '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean)]
+    : ['']
+
+  for (const entry of directories) {
+    const directory = windows ? entry.replace(/^"(.*)"$/, '$1') : entry
+    const base = hasPath ? command : path.join(directory || '.', command)
+    for (const suffix of suffixes) {
+      try {
+        const candidate = base + suffix
+        fs.accessSync(candidate, windows ? fs.constants.F_OK : fs.constants.X_OK)
+        if (fs.statSync(candidate).isFile()) return true
+      } catch {
+        // A missing or inaccessible PATH entry is not an available command.
+      }
+    }
+  }
+  return false
 }
 
 function hasSecretLikeValue(value) {
