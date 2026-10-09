@@ -129,7 +129,6 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 - 补充 Claude Desktop、Cursor、Codex、Cline、Windsurf 的默认配置路径。
 - 增加 MCP `initialize` 握手探测。
-- 增加 SARIF 和 GitHub Actions 注释输出。
 - 增加报告脱敏助手，方便公开发 Issue。
 - 收集更多真实配置样例作为 fixtures。
 

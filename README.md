@@ -133,7 +133,6 @@ This tool is a config doctor, not a security scanner. It detects common setup mi
 
 - Add built-in VS Code workspace and user-profile MCP config discovery.
 - MCP `initialize` handshake probe for stdio servers.
-- SARIF and GitHub Actions annotations.
 - Safer redaction helper for sharing reports publicly.
 - More real-world fixtures from community pull requests.
 
