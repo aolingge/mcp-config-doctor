@@ -127,6 +127,8 @@ The default `config` profile checks:
 
 ## Safety Boundary
 
+The default diagnosis checks command paths through the filesystem and `PATH`; it does not evaluate shell syntax or execute configured server commands. `--start` explicitly opts into running those commands.
+
 This tool is a config doctor, not a security scanner. It detects common setup mistakes and obvious secret-like strings, but it does not prove that an MCP server is safe. Review every server you install, especially tools that can read files, run commands, or access private APIs.
 
 ## Roadmap
