@@ -70,7 +70,6 @@ export function defaultConfigCandidates(platform = process.platform, home = os.h
   const pathApi = platform === 'win32' ? path.win32 : path
   const sharedCandidates = [
     pathApi.join(home, '.cursor', 'mcp.json'),
-    pathApi.join(home, '.codex', 'mcp.json'),
     pathApi.join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
     pathApi.join(home, '.codeium', 'windsurf', 'mcp_config.json'),
   ]

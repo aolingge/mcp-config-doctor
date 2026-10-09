@@ -1,6 +1,6 @@
 # Launch Notes
 
-Primary audience: developers debugging Claude Desktop, Cursor, Codex, Cline, Windsurf, or other MCP client configuration.
+Primary audience: developers debugging JSON MCP configuration for Claude Desktop, Cursor, Cline, Windsurf, or other compatible clients. Native Codex TOML configuration is not supported yet; see [config paths and format limits](config-paths.md).
 
 Positioning:
 
