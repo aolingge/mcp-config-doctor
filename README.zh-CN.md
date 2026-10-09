@@ -5,7 +5,7 @@
 <h1 align="center">MCP Config Doctor</h1>
 
 <p align="center">
-  一个本地优先的 MCP 配置体检 CLI，在 Claude Desktop、Cursor、Codex 等 AI 客户端连接失败前先帮你查问题。
+  一个本地优先的 JSON MCP 配置体检 CLI，在 Claude Desktop、Cursor 等 AI 客户端连接失败前先帮你查问题。
 </p>
 
 <p align="center">
@@ -123,13 +123,18 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 ## 安全边界
 
+默认诊断只通过文件系统和 `PATH` 检查命令是否存在，不解析 shell 语法，也不执行配置中的 server 命令。只有显式传入 `--start` 才会运行这些命令。
+
 这是配置体检工具，不是完整安全扫描器。它能发现常见配置错误和明显的 secret-like 字符串，但不能证明某个 MCP server 一定安全。安装任何能读文件、执行命令或访问私有 API 的 server 前，都应该先看源码和权限范围。
+
+终端、JSON、Markdown、Actions 注释和 SARIF 报告会遮蔽已知 token 模式及凭据赋值。导出的 `redactReport` 助手还会处理敏感字段及其嵌套容器，且不会修改输入。JSON 语法错误不再包含解析器引用的原文片段。脱敏属于启发式处理，任意秘密值和私有路径可能无法识别，分享前仍需检查报告。
 
 ## Roadmap
 
-- 补充 Claude Desktop、Cursor、Codex、Cline、Windsurf 的默认配置路径。
+- 补充 Claude Desktop、Cursor、Cline、Windsurf 的默认 JSON 配置路径。
+- 增加原生 Codex TOML 配置支持；目前仅支持 JSON，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
 - 增加 MCP `initialize` 握手探测。
-- 增加报告脱敏助手，方便公开发 Issue。
+- 通过合成回归样例持续扩展报告脱敏覆盖。
 - 收集更多真实配置样例作为 fixtures。
 
 ## 参与贡献
