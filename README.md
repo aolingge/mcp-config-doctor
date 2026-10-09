@@ -131,11 +131,13 @@ The default diagnosis checks command paths through the filesystem and `PATH`; it
 
 This tool is a config doctor, not a security scanner. It detects common setup mistakes and obvious secret-like strings, but it does not prove that an MCP server is safe. Review every server you install, especially tools that can read files, run commands, or access private APIs.
 
+Terminal, JSON, Markdown, annotation and SARIF reports redact known token patterns and credential assignments. The exported `redactReport` helper also masks values inside sensitive fields and containers without changing its input. JSON syntax failures never include the parser's source excerpt. Redaction is heuristic: review reports before sharing, since arbitrary secrets and private paths may not be recognized.
+
 ## Roadmap
 
 - Add built-in VS Code workspace and user-profile MCP config discovery.
 - MCP `initialize` handshake probe for stdio servers.
-- Safer redaction helper for sharing reports publicly.
+- Expand redaction coverage with synthetic regression fixtures.
 - More real-world fixtures from community pull requests.
 
 ## Contributing

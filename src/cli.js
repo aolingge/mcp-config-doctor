@@ -1,7 +1,18 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import process from 'node:process'
-import { defaultConfigCandidates, diagnoseConfig, diagnoseProfile, formatAnnotations, formatMarkdown, formatSarif, formatText, PROFILE_NAMES } from './doctor.js'
+import {
+  defaultConfigCandidates,
+  diagnoseConfig,
+  diagnoseProfile,
+  formatAnnotations,
+  formatMarkdown,
+  formatSarif,
+  formatText,
+  PROFILE_NAMES,
+  redactReport,
+  redactReportText,
+} from './doctor.js'
 
 const VERSION = '0.1.1'
 
@@ -67,7 +78,7 @@ Options:
   --start            run a short startup probe for local stdio servers
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
-  --json             print raw JSON report
+  --json             print redacted JSON report
   --sarif            print SARIF 2.1.0 report
   --annotations      print GitHub Actions warnings
   --version          print version
@@ -100,7 +111,7 @@ try {
     ? diagnoseConfig(target, { start: args.start })
     : diagnoseProfile(target, args.profile)
 
-  if (args.json) console.log(JSON.stringify(report, null, 2))
+  if (args.json) console.log(JSON.stringify(redactReport(report), null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))
   else if (args.sarif) console.log(JSON.stringify(formatSarif(report), null, 2))
   else if (args.annotations) console.log(formatAnnotations(report))
@@ -108,6 +119,6 @@ try {
 
   process.exit(report.score >= args.minScore ? 0 : 1)
 } catch (error) {
-  console.error(`mcp-config-doctor: ${error.message}`)
+  console.error(`mcp-config-doctor: ${redactReportText(error.message)}`)
   process.exit(2)
 }
