@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import process from 'node:process'
 import { defaultConfigCandidates, diagnoseConfig, diagnoseProfile, formatAnnotations, formatMarkdown, formatSarif, formatText, PROFILE_NAMES } from './doctor.js'
 
-const VERSION = '0.1.0'
+const VERSION = '0.1.1'
 
 function parseArgs(argv) {
   const args = {
