@@ -31,7 +31,6 @@ test('default config candidates include current supported client paths', () => {
   assert.deepEqual(win, [
     'C:\\Users\\tester\\AppData\\Roaming\\Claude\\claude_desktop_config.json',
     'C:\\Users\\tester\\.cursor\\mcp.json',
-    'C:\\Users\\tester\\.codex\\mcp.json',
     'C:\\Users\\tester\\.cline\\data\\settings\\cline_mcp_settings.json',
     'C:\\Users\\tester\\.codeium\\windsurf\\mcp_config.json',
   ])
@@ -39,7 +38,6 @@ test('default config candidates include current supported client paths', () => {
   assert.deepEqual(mac, [
     path.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
     path.join('/Users/tester', '.cursor', 'mcp.json'),
-    path.join('/Users/tester', '.codex', 'mcp.json'),
     path.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
     path.join('/Users/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
@@ -47,10 +45,17 @@ test('default config candidates include current supported client paths', () => {
   assert.deepEqual(linux, [
     path.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
     path.join('/home/tester', '.cursor', 'mcp.json'),
-    path.join('/home/tester', '.codex', 'mcp.json'),
     path.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
     path.join('/home/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
+})
+
+test('JSON discovery does not advertise native Codex TOML support', () => {
+  for (const [platform, home] of [['win32', 'C:\\Users\\tester'], ['darwin', '/Users/tester'], ['linux', '/home/tester']]) {
+    const candidates = defaultConfigCandidates(platform, home)
+    assert.equal(candidates.some((candidate) => candidate.includes('.codex')), false)
+    assert.equal(candidates.some((candidate) => candidate.endsWith('.toml')), false)
+  }
 })
 
 test('profile list includes consolidated MCP small-tool profiles', () => {

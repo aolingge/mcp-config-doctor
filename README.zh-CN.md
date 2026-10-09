@@ -5,7 +5,7 @@
 <h1 align="center">MCP Config Doctor</h1>
 
 <p align="center">
-  一个本地优先的 MCP 配置体检 CLI，在 Claude Desktop、Cursor、Codex 等 AI 客户端连接失败前先帮你查问题。
+  一个本地优先的 JSON MCP 配置体检 CLI，在 Claude Desktop、Cursor 等 AI 客户端连接失败前先帮你查问题。
 </p>
 
 <p align="center">
@@ -127,7 +127,8 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 ## Roadmap
 
-- 补充 Claude Desktop、Cursor、Codex、Cline、Windsurf 的默认配置路径。
+- 补充 Claude Desktop、Cursor、Cline、Windsurf 的默认 JSON 配置路径。
+- 增加原生 Codex TOML 配置支持；目前仅支持 JSON，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
 - 增加 MCP `initialize` 握手探测。
 - 增加报告脱敏助手，方便公开发 Issue。
 - 收集更多真实配置样例作为 fixtures。
