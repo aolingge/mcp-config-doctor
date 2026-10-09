@@ -21,10 +21,10 @@ function parseArgs(argv) {
 
   for (let index = 0; index < argv.length; index += 1) {
     const item = argv[index]
-    if (item === '--config') args.config = argv[++index]
-    else if (item === '--path') args.path = argv[++index]
-    else if (item === '--profile') args.profile = argv[++index]
-    else if (item === '--min-score') args.minScore = Number(argv[++index])
+    if (item === '--config') args.config = optionValue(argv, ++index, item)
+    else if (item === '--path') args.path = optionValue(argv, ++index, item)
+    else if (item === '--profile') args.profile = optionValue(argv, ++index, item)
+    else if (item === '--min-score') args.minScore = Number(optionValue(argv, ++index, item))
     else if (item === '--markdown') args.markdown = true
     else if (item === '--json') args.json = true
     else if (item === '--sarif') args.sarif = true
@@ -34,7 +34,21 @@ function parseArgs(argv) {
     else if (item === '-h' || item === '--help') args.help = true
     else throw new Error(`Unknown option: ${item}`)
   }
+  if (!Number.isFinite(args.minScore) || args.minScore < 0 || args.minScore > 100) {
+    throw new Error('--min-score must be a number from 0 to 100')
+  }
+  if (!PROFILE_NAMES.includes(args.profile)) {
+    throw new Error(`--profile must be one of: ${PROFILE_NAMES.join(', ')}`)
+  }
   return args
+}
+
+function optionValue(argv, index, option) {
+  const value = argv[index]
+  if (!value || !value.trim() || value.startsWith('-')) {
+    throw new Error(`${option} requires a value`)
+  }
+  return value
 }
 
 function help() {
