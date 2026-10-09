@@ -123,6 +123,8 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 ## 安全边界
 
+默认诊断只通过文件系统和 `PATH` 检查命令是否存在，不解析 shell 语法，也不执行配置中的 server 命令。只有显式传入 `--start` 才会运行这些命令。
+
 这是配置体检工具，不是完整安全扫描器。它能发现常见配置错误和明显的 secret-like 字符串，但不能证明某个 MCP server 一定安全。安装任何能读文件、执行命令或访问私有 API 的 server 前，都应该先看源码和权限范围。
 
 ## Roadmap
