@@ -3,6 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { parseJsonc } from './jsonc.js'
+import { runProtocolProbe, validateProbeOptions } from './probe.js'
 
 const secretPatterns = [
   /sk-[A-Za-z0-9_-]{20,}/,
@@ -161,6 +162,13 @@ function probeEnvironment(env) {
   return merged
 }
 
+function unsupportedProbeSettings(server, env) {
+  const fields = [server.command, ...(Array.isArray(server.args) ? server.args : []), ...Object.values(env)]
+  return server.disabled === true || server.cwd !== undefined || server.envFile !== undefined
+    || server.sandboxEnabled === true || (server.type && !['stdio', 'local'].includes(server.type))
+    || fields.some((value) => typeof value === 'string' && value.includes('${'))
+}
+
 function hasSecretLikeValue(value) {
   if (typeof value !== 'string') return false
   return secretPatterns.some((pattern) => pattern.test(value))
@@ -270,7 +278,7 @@ export function diagnoseProfile(target, profile = 'manifest') {
   return { ...diagnoseProfileText(source.raw, target, profile), redacted: source.redacted }
 }
 
-export function diagnoseConfig(configPath, options = {}) {
+function analyzeConfig(configPath, options = {}, onServer = null) {
   const results = []
   const startChecks = options.start === true
   let loaded
@@ -365,16 +373,24 @@ export function diagnoseConfig(configPath, options = {}) {
       }
     }
 
-    if (startChecks && argsValid && envValid && server.command && typeof server.command === 'string' && commandExists(server.command)) {
+    if (onServer) onServer({ name, server, env, argsValid, envValid })
+
+    if (startChecks && argsValid && envValid && unsupportedProbeSettings(server, env)) {
+      results.push(makeResult('WARN', `${name}:start`, 'No probe ran: client-specific launch settings need the native client', 'Use the native client for disabled entries, cwd/envFile, sandboxing or variable expansion.'))
+    } else if (startChecks && argsValid && envValid && server.command && typeof server.command === 'string' && commandExists(server.command)) {
       const args = Array.isArray(server.args) ? server.args : []
       const result = spawnSync(server.command, args, {
         env: probeEnvironment(env),
         timeout: options.timeoutMs ?? 2500,
+        killSignal: 'SIGKILL',
+        windowsHide: true,
         stdio: 'ignore',
       })
       if (result.error?.code === 'ETIMEDOUT') {
         results.push(makeResult('PASS', `${name}:start`, 'Process stayed alive during startup probe'))
-      } else if (result.status === 0 || result.status === null) {
+      } else if (result.error || result.status === null) {
+        results.push(makeResult('WARN', `${name}:start`, 'Startup probe could not start or was terminated', 'Inspect the command locally.'))
+      } else if (result.status === 0) {
         results.push(makeResult('PASS', `${name}:start`, 'Startup probe did not fail immediately'))
       } else {
         results.push(makeResult('WARN', `${name}:start`, `Process exited with code ${result.status}`, 'Run the command manually to inspect stderr.'))
@@ -384,6 +400,38 @@ export function diagnoseConfig(configPath, options = {}) {
 
   const score = scoreResults(results)
   return { file: configPath, score, results }
+}
+
+export function diagnoseConfig(configPath, options = {}) {
+  if (options.initialize === true || options.discover === true) {
+    throw new Error('Use diagnoseConfigAsync for protocol probes')
+  }
+  validateProbeOptions(options)
+  return analyzeConfig(configPath, options)
+}
+
+export async function diagnoseConfigAsync(configPath, options = {}) {
+  const timeoutMs = validateProbeOptions(options)
+  const mode = options.discover === true ? 'discover' : options.initialize === true ? 'initialize' : null
+  if (!mode) return diagnoseConfig(configPath, options)
+  const candidates = []
+  const report = analyzeConfig(configPath, { ...options, start: false }, (candidate) => candidates.push(candidate))
+  const originalCount = report.results.length
+  for (const { name, server, env, argsValid, envValid } of candidates) {
+    if (!argsValid || !envValid) continue
+    if (typeof server.command !== 'string' || !server.command || !commandExists(server.command)) {
+      report.results.push(makeResult('WARN', `${name}:${mode}`, 'No local stdio probe ran; a usable command is required', 'Remote URL probes are not implemented.'))
+      continue
+    }
+    if (unsupportedProbeSettings(server, env)) {
+      report.results.push(makeResult('WARN', `${name}:${mode}`, 'No probe ran: client-specific launch settings need the native client', 'Use the native client for disabled entries, cwd/envFile, sandboxing or variable expansion.'))
+      continue
+    }
+    const result = await runProtocolProbe(server, probeEnvironment(env), mode, timeoutMs)
+    report.results.push({ ...result, check: `${name}:${mode}` })
+  }
+  if (report.results.length !== originalCount) report.score = scoreResults(report.results)
+  return report
 }
 
 export function scoreResults(results) {

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add explicit bounded legacy initialize and modern server/discover probes, an asynchronous API, validated deadlines and direct-child teardown; retain inert default diagnosis and omit raw server output.
+
 - Diagnose malformed root, server, argument and environment shapes without crashing or launching invalid entries; add accurately labeled synthetic JSON fixtures.
 
 - Added built-in default config candidates for Cline CLI and Windsurf.

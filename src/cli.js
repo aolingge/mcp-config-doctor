@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import process from 'node:process'
 import {
   defaultConfigCandidates,
-  diagnoseConfig,
+  diagnoseConfigAsync,
   diagnoseProfile,
   formatAnnotations,
   formatMarkdown,
@@ -13,6 +13,7 @@ import {
   redactReport,
   redactReportText,
 } from './doctor.js'
+import { validateProbeOptions } from './probe.js'
 
 const VERSION = '0.1.1'
 
@@ -28,6 +29,9 @@ function parseArgs(argv) {
     sarif: false,
     annotations: false,
     start: false,
+    initialize: false,
+    discover: false,
+    timeoutMs: 2500,
     version: false,
   }
 
@@ -43,6 +47,9 @@ function parseArgs(argv) {
     else if (item === '--sarif') args.sarif = true
     else if (item === '--annotations') args.annotations = true
     else if (item === '--start') args.start = true
+    else if (item === '--initialize') args.initialize = true
+    else if (item === '--discover') args.discover = true
+    else if (item === '--timeout-ms') args.timeoutMs = Number(optionValue(argv, ++index, item))
     else if (item === '--version') args.version = true
     else if (item === '-h' || item === '--help') args.help = true
     else throw new Error(`Unknown option: ${item}`)
@@ -52,6 +59,10 @@ function parseArgs(argv) {
   }
   if (!PROFILE_NAMES.includes(args.profile)) {
     throw new Error(`--profile must be one of: ${PROFILE_NAMES.join(', ')}`)
+  }
+  validateProbeOptions(args)
+  if (args.profile !== 'config' && (args.start || args.initialize || args.discover)) {
+    throw new Error('Process probes require --profile config')
   }
   return args
 }
@@ -78,6 +89,9 @@ Options:
   --path FILE_OR_DIR file or directory for non-config profiles
   --profile NAME     profile: ${PROFILE_NAMES.join(', ')}
   --start            run a short startup probe for local stdio servers
+  --initialize       explicitly probe legacy MCP initialize over stdio
+  --discover         explicitly probe modern MCP server/discover over stdio
+  --timeout-ms N     per-server deadline, 100..60000, default: 2500
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
   --json             print redacted JSON report
@@ -111,7 +125,7 @@ try {
   }
 
   const report = args.profile === 'config'
-    ? diagnoseConfig(target, { start: args.start, jsonc: args.jsonc })
+    ? await diagnoseConfigAsync(target, { start: args.start, initialize: args.initialize, discover: args.discover, timeoutMs: args.timeoutMs, jsonc: args.jsonc })
     : diagnoseProfile(target, args.profile)
 
   if (args.json) console.log(JSON.stringify(redactReport(report), null, 2))

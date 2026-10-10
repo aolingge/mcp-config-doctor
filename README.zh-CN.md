@@ -125,9 +125,11 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 }
 ```
 
+使用 `--initialize` 显式检查旧版 MCP 握手，或使用 `--discover` 检查新版 `2026-07-28` 发现协议。只能选择一种探测模式；`--timeout-ms` 限定每个服务器的时间。详见[协议探测说明](docs/protocol-probes.md)，其中列出输出限制、不支持的客户端启动设置及异步 API。
+
 ## 安全边界
 
-默认诊断只通过文件系统和 `PATH` 检查命令是否存在，不解析 shell 语法，也不执行配置中的 server 命令。只有显式传入 `--start` 才会运行这些命令。
+默认诊断只通过文件系统和 `PATH` 检查命令是否存在，不解析 shell 语法，也不执行配置中的 server 命令。只有显式传入 `--start`、`--initialize` 或 `--discover` 才会运行符合条件的命令。
 
 这是配置体检工具，不是完整安全扫描器。它能发现常见配置错误和明显的 secret-like 字符串，但不能证明某个 MCP server 一定安全。安装任何能读文件、执行命令或访问私有 API 的 server 前，都应该先看源码和权限范围。
 
@@ -137,7 +139,7 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 - 扩展更多自定义客户端 profile 与配置格式支持。
 - 增加原生 Codex TOML 配置支持；目前支持 JSON 与指定 VS Code JSONC 文件，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
-- 增加 MCP `initialize` 握手探测。
+- 扩展字面量 stdio 命令以外的传输方式与客户端启动上下文支持。
 - 通过合成回归样例持续扩展报告脱敏覆盖。
 - 收集更多真实配置样例作为 fixtures。
 

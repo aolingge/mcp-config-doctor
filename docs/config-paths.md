@@ -1,6 +1,6 @@
 # MCP Config Paths
 
-Auto-discovery chooses the first existing candidate in the order below. Existing home-client priority is retained; use `--config FILE` to select another client explicitly. No server starts unless `--start` is supplied. For startup probes, prefer an explicit config path.
+Auto-discovery chooses the first existing candidate in the order below. Existing home-client priority is retained; use `--config FILE` to select another client explicitly. No server starts unless `--start`, `--initialize` or `--discover` is explicitly supplied. For startup probes, prefer an explicit config path.
 
 | Order | Client / scope | Candidate |
 | --- | --- | --- |

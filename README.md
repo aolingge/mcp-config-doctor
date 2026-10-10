@@ -127,9 +127,11 @@ Configuration roots, server maps and entries must be objects; `args` must contai
 }
 ```
 
+Use `--initialize` for an explicit legacy MCP handshake or `--discover` for modern `2026-07-28` discovery. Choose one probe mode; `--timeout-ms` bounds each server. See [protocol probes](docs/protocol-probes.md) for limits, unsupported native-client launch settings and the asynchronous API.
+
 ## Safety Boundary
 
-The default diagnosis checks command paths through the filesystem and `PATH`; it does not evaluate shell syntax or execute configured server commands. `--start` explicitly opts into running those commands.
+The default diagnosis checks command paths through the filesystem and `PATH`; it does not evaluate shell syntax or execute configured server commands. `--start`, `--initialize` and `--discover` explicitly opt into running eligible commands.
 
 This tool is a config doctor, not a security scanner. It detects common setup mistakes and obvious secret-like strings, but it does not prove that an MCP server is safe. Review every server you install, especially tools that can read files, run commands, or access private APIs.
 
@@ -138,7 +140,7 @@ Terminal, JSON, Markdown, annotation and SARIF reports redact known token patter
 ## Roadmap
 
 - Expand support for custom client profiles and configuration formats.
-- MCP `initialize` handshake probe for stdio servers.
+- Expand transport and native-client launch-context support beyond literal stdio commands.
 - Expand redaction coverage with synthetic regression fixtures.
 - More real-world fixtures from community pull requests.
 
