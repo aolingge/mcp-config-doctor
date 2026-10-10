@@ -2,8 +2,14 @@
 
 ## Unreleased
 
+- Add explicit bounded legacy initialize and modern server/discover probes, an asynchronous API, validated deadlines and direct-child teardown; retain inert default diagnosis and omit raw server output.
+
+- Diagnose malformed root, server, argument and environment shapes without crashing or launching invalid entries; add accurately labeled synthetic JSON fixtures.
+
 - Added built-in default config candidates for Cline CLI and Windsurf.
-- Documented the current auto-detection boundary and clarified that VS Code configs still require explicit `--config`.
+- Added VS Code default/workspace, portable workspace, Cursor workspace, Copilot user and Devin legacy Cascade discovery with documented overrides and stable lookup priority.
+- Added scoped JSONC support for native VS Code files and explicit `--jsonc` for custom profiles; other configs remain strict JSON.
+- Preserved native Codex TOML limitations and report redaction while processing JSONC source.
 
 ## 0.1.1
 

@@ -1,14 +1,12 @@
 # Backlog
 
-## Active
+## Prepared for maintainer review
 
-- [x] Issue #1 partial: add verified Cline CLI and Windsurf default config candidates.
-- [ ] Add VS Code workspace and user-profile MCP config discovery without regressing the current home-directory lookup flow.
-- [ ] Triage overlapping external PRs #8, #10, #11, #12, and #13; governance check on 2026-05-27 found #8/#11/#13 dirty and #10/#12 blocked by action-required validate runs, so review locally before merge decisions.
-- [ ] Collect more real-world client config fixtures after the path matrix expands again.
+- Review the own-repository successors of contributor path, fixture, redaction and handshake proposals; retain contributor merge ancestry and current CLI/lookup/Codex-format fixes.
+- Require exact-head CI and independent approval before merging prepared code or workflow changes. Earlier CI results do not cover a changed head.
 
-## Next
+## Next verified improvements
 
-- [ ] Add a focused README example that shows when to rely on auto-discovery versus `--config`.
-- [ ] Explore a safe startup-handshake probe that goes beyond process spawn checks.
-- [ ] Close the loop on current GitHub governance notes: open issues #1-#5 and release feedback issue #9 remain open; local `main` is ahead of GitHub by governance commits and still needs explicit push/PR authorization.
+- Expand synthetic fixtures when supporting another actual client schema; keep native Codex TOML distinct from custom JSON.
+- Extend [protocol probes](docs/protocol-probes.md) only with explicit launch-context and transport semantics, bounded lifecycle and safe/unsafe regressions. Current probes deliberately skip unsupported native-client settings.
+- Recheck open issues and release feedback against current behavior before changing labels or closing them; this file grants no permission for messages, releases or protection changes.

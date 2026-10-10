@@ -1,7 +1,15 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
-import { defaultConfigCandidates, diagnoseConfig, diagnoseProfileText, PROFILE_NAMES } from '../src/doctor.js'
+import {
+  defaultConfigCandidates,
+  diagnoseConfig,
+  diagnoseProfileText,
+  formatMarkdown,
+  PROFILE_NAMES,
+  redactReport,
+  redactReportText,
+} from '../src/doctor.js'
 
 test('valid fixture scores higher than weak fixture', () => {
   const strong = diagnoseConfig('fixtures/valid.mcp.json')
@@ -24,33 +32,38 @@ test('warns when server scope or permissions are not documented', () => {
 })
 
 test('default config candidates include current supported client paths', () => {
-  const win = defaultConfigCandidates('win32', 'C:\\Users\\tester')
-  const mac = defaultConfigCandidates('darwin', '/Users/tester')
-  const linux = defaultConfigCandidates('linux', '/home/tester')
+  const win = defaultConfigCandidates('win32', 'C:\\Users\\tester', 'D:\\project', {})
+  const mac = defaultConfigCandidates('darwin', '/Users/tester', '/project', {})
+  const linux = defaultConfigCandidates('linux', '/home/tester', '/project', {})
 
-  assert.deepEqual(win, [
+  assert.deepEqual(win.slice(0, 4), [
     'C:\\Users\\tester\\AppData\\Roaming\\Claude\\claude_desktop_config.json',
     'C:\\Users\\tester\\.cursor\\mcp.json',
-    'C:\\Users\\tester\\.codex\\mcp.json',
     'C:\\Users\\tester\\.cline\\data\\settings\\cline_mcp_settings.json',
     'C:\\Users\\tester\\.codeium\\windsurf\\mcp_config.json',
   ])
 
-  assert.deepEqual(mac, [
-    path.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
-    path.join('/Users/tester', '.cursor', 'mcp.json'),
-    path.join('/Users/tester', '.codex', 'mcp.json'),
-    path.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
-    path.join('/Users/tester', '.codeium', 'windsurf', 'mcp_config.json'),
+  assert.deepEqual(mac.slice(0, 4), [
+    path.posix.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+    path.posix.join('/Users/tester', '.cursor', 'mcp.json'),
+    path.posix.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    path.posix.join('/Users/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
 
-  assert.deepEqual(linux, [
-    path.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
-    path.join('/home/tester', '.cursor', 'mcp.json'),
-    path.join('/home/tester', '.codex', 'mcp.json'),
-    path.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
-    path.join('/home/tester', '.codeium', 'windsurf', 'mcp_config.json'),
+  assert.deepEqual(linux.slice(0, 4), [
+    path.posix.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
+    path.posix.join('/home/tester', '.cursor', 'mcp.json'),
+    path.posix.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    path.posix.join('/home/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
+})
+
+test('JSON discovery does not advertise native Codex TOML support', () => {
+  for (const [platform, home] of [['win32', 'C:\\Users\\tester'], ['darwin', '/Users/tester'], ['linux', '/home/tester']]) {
+    const candidates = defaultConfigCandidates(platform, home)
+    assert.equal(candidates.some((candidate) => candidate.includes('.codex')), false)
+    assert.equal(candidates.some((candidate) => candidate.endsWith('.toml')), false)
+  }
 })
 
 test('profile list includes consolidated MCP small-tool profiles', () => {
@@ -100,4 +113,41 @@ test('server smoke profile checks start, list, call, and failure docs', () => {
     'server-smoke',
   )
   assert.equal(report.score, 100)
+})
+
+test('redacts secret-like values in JSON report data', () => {
+  const openAiKey = `sk-${'a'.repeat(20)}`
+  const githubToken = `ghp_${'b'.repeat(20)}`
+  const report = {
+    file: 'mcp.json',
+    score: 50,
+    env: {
+      OPENAI_API_KEY: openAiKey,
+      GITHUB_TOKEN: 'plain-token-value',
+      PATH: '/usr/local/bin',
+    },
+    results: [{ status: 'WARN', check: 'secret', message: `found ${githubToken}`, fix: null }],
+  }
+
+  const redacted = redactReport(report)
+
+  assert.equal(redacted.env.OPENAI_API_KEY, '[REDACTED]')
+  assert.equal(redacted.env.GITHUB_TOKEN, '[REDACTED]')
+  assert.equal(redacted.env.PATH, '/usr/local/bin')
+  assert.equal(redacted.results[0].message, 'found [REDACTED]')
+  assert.equal(report.env.OPENAI_API_KEY, openAiKey)
+})
+
+test('redacts secret-like values in Markdown report text', () => {
+  const openAiKey = `sk-${'c'.repeat(20)}`
+  const fineGrainedGithubToken = `github_pat_${'d'.repeat(20)}`
+  const markdown = formatMarkdown({
+    file: 'mcp.json',
+    score: 50,
+    results: [{ status: 'WARN', check: 'secret', message: `found ${fineGrainedGithubToken}`, fix: null }],
+  })
+
+  assert.match(markdown, /\[REDACTED\]/)
+  assert.doesNotMatch(markdown, new RegExp(fineGrainedGithubToken))
+  assert.equal(redactReportText(`token ${openAiKey}`), 'token [REDACTED]')
 })

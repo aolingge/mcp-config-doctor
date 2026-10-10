@@ -1,7 +1,19 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import process from 'node:process'
-import { defaultConfigCandidates, diagnoseConfig, diagnoseProfile, formatAnnotations, formatMarkdown, formatSarif, formatText, PROFILE_NAMES } from './doctor.js'
+import {
+  defaultConfigCandidates,
+  diagnoseConfigAsync,
+  diagnoseProfile,
+  formatAnnotations,
+  formatMarkdown,
+  formatSarif,
+  formatText,
+  PROFILE_NAMES,
+  redactReport,
+  redactReportText,
+} from './doctor.js'
+import { validateProbeOptions } from './probe.js'
 
 const VERSION = '0.1.1'
 
@@ -13,28 +25,54 @@ function parseArgs(argv) {
     minScore: 70,
     markdown: false,
     json: false,
+    jsonc: false,
     sarif: false,
     annotations: false,
     start: false,
+    initialize: false,
+    discover: false,
+    timeoutMs: 2500,
     version: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
     const item = argv[index]
-    if (item === '--config') args.config = argv[++index]
-    else if (item === '--path') args.path = argv[++index]
-    else if (item === '--profile') args.profile = argv[++index]
-    else if (item === '--min-score') args.minScore = Number(argv[++index])
+    if (item === '--config') args.config = optionValue(argv, ++index, item)
+    else if (item === '--path') args.path = optionValue(argv, ++index, item)
+    else if (item === '--profile') args.profile = optionValue(argv, ++index, item)
+    else if (item === '--min-score') args.minScore = Number(optionValue(argv, ++index, item))
     else if (item === '--markdown') args.markdown = true
     else if (item === '--json') args.json = true
+    else if (item === '--jsonc') args.jsonc = true
     else if (item === '--sarif') args.sarif = true
     else if (item === '--annotations') args.annotations = true
     else if (item === '--start') args.start = true
+    else if (item === '--initialize') args.initialize = true
+    else if (item === '--discover') args.discover = true
+    else if (item === '--timeout-ms') args.timeoutMs = Number(optionValue(argv, ++index, item))
     else if (item === '--version') args.version = true
     else if (item === '-h' || item === '--help') args.help = true
     else throw new Error(`Unknown option: ${item}`)
   }
+  if (!Number.isFinite(args.minScore) || args.minScore < 0 || args.minScore > 100) {
+    throw new Error('--min-score must be a number from 0 to 100')
+  }
+  if (!PROFILE_NAMES.includes(args.profile)) {
+    throw new Error(`--profile must be one of: ${PROFILE_NAMES.join(', ')}`)
+  }
+  validateProbeOptions(args)
+  if (args.profile !== 'config' && (args.start || args.initialize || args.discover)) {
+    throw new Error('Process probes require --profile config')
+  }
   return args
+}
+
+function optionValue(argv, index, option) {
+  const value = argv[index]
+  if (!value || !value.trim() || value.startsWith('-')) {
+    throw new Error(`${option} requires a value`)
+  }
+  return value
 }
 
 function help() {
@@ -51,9 +89,13 @@ Options:
   --path FILE_OR_DIR file or directory for non-config profiles
   --profile NAME     profile: ${PROFILE_NAMES.join(', ')}
   --start            run a short startup probe for local stdio servers
+  --initialize       explicitly probe legacy MCP initialize over stdio
+  --discover         explicitly probe modern MCP server/discover over stdio
+  --timeout-ms N     per-server deadline, 100..60000, default: 2500
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
-  --json             print raw JSON report
+  --json             print redacted JSON report
+  --jsonc            allow comments/trailing commas for a custom config path
   --sarif            print SARIF 2.1.0 report
   --annotations      print GitHub Actions warnings
   --version          print version
@@ -83,10 +125,10 @@ try {
   }
 
   const report = args.profile === 'config'
-    ? diagnoseConfig(target, { start: args.start })
+    ? await diagnoseConfigAsync(target, { start: args.start, initialize: args.initialize, discover: args.discover, timeoutMs: args.timeoutMs, jsonc: args.jsonc })
     : diagnoseProfile(target, args.profile)
 
-  if (args.json) console.log(JSON.stringify(report, null, 2))
+  if (args.json) console.log(JSON.stringify(redactReport(report), null, 2))
   else if (args.markdown) console.log(formatMarkdown(report))
   else if (args.sarif) console.log(JSON.stringify(formatSarif(report), null, 2))
   else if (args.annotations) console.log(formatAnnotations(report))
@@ -94,6 +136,6 @@ try {
 
   process.exit(report.score >= args.minScore ? 0 : 1)
 } catch (error) {
-  console.error(`mcp-config-doctor: ${error.message}`)
+  console.error(`mcp-config-doctor: ${redactReportText(error.message)}`)
   process.exit(2)
 }

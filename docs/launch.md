@@ -1,6 +1,6 @@
 # Launch Notes
 
-Primary audience: developers debugging Claude Desktop, Cursor, Codex, Cline, Windsurf, or other MCP client configuration.
+Primary audience: developers debugging JSON MCP configuration for Claude Desktop, Cursor, Cline, Windsurf, or other compatible clients. Native Codex TOML configuration is not supported yet; see [config paths and format limits](config-paths.md).
 
 Positioning:
 
@@ -11,7 +11,7 @@ Short post:
 ```text
 MCP config errors are painful because clients often fail with vague connection messages.
 
-mcp-config-doctor checks JSON shape, server entries, command visibility, env mistakes, URLs, secret-like values, and optional startup probes locally.
+mcp-config-doctor checks JSON shape, server entries, command visibility, env mistakes, URLs, secret-like values, and explicit startup, legacy initialize or modern discovery probes locally.
 
 npx mcp-config-doctor --config claude_desktop_config.json
 
@@ -23,3 +23,5 @@ Safety wording:
 - It is a config doctor, not a proof that an MCP server is safe.
 - It runs locally and does not upload config files.
 - `--start` is explicit opt-in because it launches local server commands.
+
+- Protocol probes require explicit `--initialize` or `--discover`; see [bounded probe behavior](protocol-probes.md). They send no tool/resource/prompt requests.
