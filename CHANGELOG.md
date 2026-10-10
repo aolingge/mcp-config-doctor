@@ -3,7 +3,9 @@
 ## Unreleased
 
 - Added built-in default config candidates for Cline CLI and Windsurf.
-- Documented the current auto-detection boundary and clarified that VS Code configs still require explicit `--config`.
+- Added VS Code default/workspace, portable workspace, Cursor workspace, Copilot user and Devin legacy Cascade discovery with documented overrides and stable lookup priority.
+- Added scoped JSONC support for native VS Code files and explicit `--jsonc` for custom profiles; other configs remain strict JSON.
+- Preserved native Codex TOML limitations and report redaction while processing JSONC source.
 
 ## 0.1.1
 
