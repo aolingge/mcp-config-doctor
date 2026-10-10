@@ -5,7 +5,7 @@
 <h1 align="center">MCP Config Doctor</h1>
 
 <p align="center">
-  A local-first CLI that diagnoses MCP config files before Claude Desktop, Cursor, Codex, or another AI client fails to connect.
+  A local-first CLI that diagnoses JSON and VS Code JSONC MCP config files before Claude Desktop, Cursor, or another AI client fails to connect.
 </p>
 
 <p align="center">
@@ -75,7 +75,7 @@ npx mcp-config-doctor --path tools.md --profile tool-name
 npx mcp-config-doctor --path docs/ --profile server-smoke
 ```
 
-Auto-detection currently looks for common home-directory config files for Claude Desktop, Cursor, Codex, Cline CLI, and Windsurf. For VS Code workspace or profile configs, pass `--config` explicitly for now. See [docs/config-paths.md](docs/config-paths.md) for the current path table.
+Auto-detection checks common home-client paths, the VS Code default profile, Copilot user config and portable/VS Code/Cursor workspace files. Existing home-client priority is retained; use `--config` to select a specific file. Native VS Code paths accept JSON comments/trailing commas; use `--jsonc` for a custom profile path. Native Codex `config.toml` remains unsupported. See [docs/config-paths.md](docs/config-paths.md) for ordering, overrides and format limits.
 
 ## Profiles
 
@@ -104,6 +104,8 @@ The default `config` profile checks:
 | Secret-like values | Tokens pasted into config | Keeps public reports safer |
 | Startup probe | Immediate process exit | Finds broken local stdio servers early |
 
+Configuration roots, server maps and entries must be objects; `args` must contain strings and generic `mcpServers` environments must map names to strings. Native VS Code `servers` also accepts finite numbers and `null`; probes convert numbers to strings and remove null-valued variables from the inherited environment. Invalid arguments or environment values prevent `--start` from launching the entry.
+
 ## Example Config
 
 ```json
@@ -127,13 +129,17 @@ The default `config` profile checks:
 
 ## Safety Boundary
 
+The default diagnosis checks command paths through the filesystem and `PATH`; it does not evaluate shell syntax or execute configured server commands. `--start` explicitly opts into running those commands.
+
 This tool is a config doctor, not a security scanner. It detects common setup mistakes and obvious secret-like strings, but it does not prove that an MCP server is safe. Review every server you install, especially tools that can read files, run commands, or access private APIs.
+
+Terminal, JSON, Markdown, annotation and SARIF reports redact known token patterns and credential assignments. The exported `redactReport` helper also masks values inside sensitive fields and containers without changing its input. JSON syntax failures never include the parser's source excerpt. Redaction is heuristic: review reports before sharing, since arbitrary secrets and private paths may not be recognized.
 
 ## Roadmap
 
-- Add built-in VS Code workspace and user-profile MCP config discovery.
+- Expand support for custom client profiles and configuration formats.
 - MCP `initialize` handshake probe for stdio servers.
-- Safer redaction helper for sharing reports publicly.
+- Expand redaction coverage with synthetic regression fixtures.
 - More real-world fixtures from community pull requests.
 
 ## Contributing
