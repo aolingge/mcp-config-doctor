@@ -32,29 +32,29 @@ test('warns when server scope or permissions are not documented', () => {
 })
 
 test('default config candidates include current supported client paths', () => {
-  const win = defaultConfigCandidates('win32', 'C:\\Users\\tester')
-  const mac = defaultConfigCandidates('darwin', '/Users/tester')
-  const linux = defaultConfigCandidates('linux', '/home/tester')
+  const win = defaultConfigCandidates('win32', 'C:\\Users\\tester', 'D:\\project', {})
+  const mac = defaultConfigCandidates('darwin', '/Users/tester', '/project', {})
+  const linux = defaultConfigCandidates('linux', '/home/tester', '/project', {})
 
-  assert.deepEqual(win, [
+  assert.deepEqual(win.slice(0, 4), [
     'C:\\Users\\tester\\AppData\\Roaming\\Claude\\claude_desktop_config.json',
     'C:\\Users\\tester\\.cursor\\mcp.json',
     'C:\\Users\\tester\\.cline\\data\\settings\\cline_mcp_settings.json',
     'C:\\Users\\tester\\.codeium\\windsurf\\mcp_config.json',
   ])
 
-  assert.deepEqual(mac, [
-    path.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
-    path.join('/Users/tester', '.cursor', 'mcp.json'),
-    path.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
-    path.join('/Users/tester', '.codeium', 'windsurf', 'mcp_config.json'),
+  assert.deepEqual(mac.slice(0, 4), [
+    path.posix.join('/Users/tester', 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
+    path.posix.join('/Users/tester', '.cursor', 'mcp.json'),
+    path.posix.join('/Users/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    path.posix.join('/Users/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
 
-  assert.deepEqual(linux, [
-    path.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
-    path.join('/home/tester', '.cursor', 'mcp.json'),
-    path.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
-    path.join('/home/tester', '.codeium', 'windsurf', 'mcp_config.json'),
+  assert.deepEqual(linux.slice(0, 4), [
+    path.posix.join('/home/tester', '.config', 'Claude', 'claude_desktop_config.json'),
+    path.posix.join('/home/tester', '.cursor', 'mcp.json'),
+    path.posix.join('/home/tester', '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    path.posix.join('/home/tester', '.codeium', 'windsurf', 'mcp_config.json'),
   ])
 })
 

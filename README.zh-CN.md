@@ -5,7 +5,7 @@
 <h1 align="center">MCP Config Doctor</h1>
 
 <p align="center">
-  一个本地优先的 JSON MCP 配置体检 CLI，在 Claude Desktop、Cursor 等 AI 客户端连接失败前先帮你查问题。
+  一个本地优先的 JSON / VS Code JSONC MCP 配置体检 CLI，在 Claude Desktop、Cursor 等 AI 客户端连接失败前先帮你查问题。
 </p>
 
 <p align="center">
@@ -73,6 +73,8 @@ npx mcp-config-doctor --path tools.md --profile tool-name
 npx mcp-config-doctor --path docs/ --profile server-smoke
 ```
 
+自动识别覆盖常见主目录配置、VS Code 默认 profile、Copilot 用户配置，以及工作目录中的通用、VS Code 和 Cursor 配置。保留原有主目录客户端的优先顺序；检查指定文件请使用 `--config`。原生 VS Code 路径支持注释和尾随逗号，自定义 profile 可增加 `--jsonc`。Codex 原生 TOML 仍不支持。详见[路径、覆盖变量与格式限制](docs/config-paths.md)。
+
 ## Profiles
 
 | Profile | 可替代的小工具 | 适合检查 |
@@ -131,7 +133,7 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 
 ## Roadmap
 
-- 补充 Claude Desktop、Cursor、Cline、Windsurf 的默认 JSON 配置路径。
+- 扩展更多自定义客户端 profile 与配置格式支持。
 - 增加原生 Codex TOML 配置支持；目前仅支持 JSON，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
 - 增加 MCP `initialize` 握手探测。
 - 通过合成回归样例持续扩展报告脱敏覆盖。

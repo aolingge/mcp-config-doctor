@@ -5,7 +5,7 @@
 <h1 align="center">MCP Config Doctor</h1>
 
 <p align="center">
-  A local-first CLI that diagnoses JSON MCP config files before Claude Desktop, Cursor, or another AI client fails to connect.
+  A local-first CLI that diagnoses JSON and VS Code JSONC MCP config files before Claude Desktop, Cursor, or another AI client fails to connect.
 </p>
 
 <p align="center">
@@ -75,7 +75,7 @@ npx mcp-config-doctor --path tools.md --profile tool-name
 npx mcp-config-doctor --path docs/ --profile server-smoke
 ```
 
-Auto-detection currently looks for common home-directory JSON config files for Claude Desktop, Cursor, Cline CLI, and Windsurf. For VS Code workspace or profile JSON configs, pass `--config` explicitly for now. Native Codex `config.toml` is not supported by this JSON-only tool. See [docs/config-paths.md](docs/config-paths.md) for paths and format limits.
+Auto-detection checks common home-client paths, the VS Code default profile, Copilot user config and portable/VS Code/Cursor workspace files. Existing home-client priority is retained; use `--config` to select a specific file. Native VS Code paths accept JSON comments/trailing commas; use `--jsonc` for a custom profile path. Native Codex `config.toml` remains unsupported. See [docs/config-paths.md](docs/config-paths.md) for ordering, overrides and format limits.
 
 ## Profiles
 
@@ -135,7 +135,7 @@ Terminal, JSON, Markdown, annotation and SARIF reports redact known token patter
 
 ## Roadmap
 
-- Add built-in VS Code workspace and user-profile MCP config discovery.
+- Expand support for custom client profiles and configuration formats.
 - MCP `initialize` handshake probe for stdio servers.
 - Expand redaction coverage with synthetic regression fixtures.
 - More real-world fixtures from community pull requests.

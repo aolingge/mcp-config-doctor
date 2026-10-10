@@ -24,6 +24,7 @@ function parseArgs(argv) {
     minScore: 70,
     markdown: false,
     json: false,
+    jsonc: false,
     sarif: false,
     annotations: false,
     start: false,
@@ -38,6 +39,7 @@ function parseArgs(argv) {
     else if (item === '--min-score') args.minScore = Number(optionValue(argv, ++index, item))
     else if (item === '--markdown') args.markdown = true
     else if (item === '--json') args.json = true
+    else if (item === '--jsonc') args.jsonc = true
     else if (item === '--sarif') args.sarif = true
     else if (item === '--annotations') args.annotations = true
     else if (item === '--start') args.start = true
@@ -79,6 +81,7 @@ Options:
   --min-score N      fail below score, default: 70
   --markdown         print markdown report
   --json             print redacted JSON report
+  --jsonc            allow comments/trailing commas for a custom config path
   --sarif            print SARIF 2.1.0 report
   --annotations      print GitHub Actions warnings
   --version          print version
@@ -108,7 +111,7 @@ try {
   }
 
   const report = args.profile === 'config'
-    ? diagnoseConfig(target, { start: args.start })
+    ? diagnoseConfig(target, { start: args.start, jsonc: args.jsonc })
     : diagnoseProfile(target, args.profile)
 
   if (args.json) console.log(JSON.stringify(redactReport(report), null, 2))

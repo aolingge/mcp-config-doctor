@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { parseJsonc } from './jsonc.js'
 
 const secretPatterns = [
   /sk-[A-Za-z0-9_-]{20,}/,
@@ -69,40 +70,37 @@ export const PROFILE_NAMES = ['config', ...Object.keys(profileChecks)]
 const secretKeyPattern = /(?:api[_-]?key|token|secret|password|credential|authorization|cookie|private[_-]?key)/i
 const REDACTED = '[REDACTED]'
 
-export function defaultConfigCandidates(platform = process.platform, home = os.homedir()) {
-  const candidates = []
-  const pathApi = platform === 'win32' ? path.win32 : path
-  const sharedCandidates = [
+export function defaultConfigCandidates(platform = process.platform, home = os.homedir(), cwd = process.cwd(), env = process.env) {
+  const pathApi = platform === 'win32' ? path.win32 : path.posix
+  const appData = env.APPDATA || pathApi.join(home, 'AppData', 'Roaming')
+  const configHome = env.XDG_CONFIG_HOME || pathApi.join(home, '.config')
+  const userData = platform === 'win32' ? appData
+    : platform === 'darwin' ? pathApi.join(home, 'Library', 'Application Support') : configHome
+  const candidates = [
+    pathApi.join(userData, 'Claude', 'claude_desktop_config.json'),
     pathApi.join(home, '.cursor', 'mcp.json'),
-    pathApi.join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
+    env.CLINE_MCP_SETTINGS_PATH ? pathApi.resolve(cwd, env.CLINE_MCP_SETTINGS_PATH)
+      : pathApi.join(home, '.cline', 'data', 'settings', 'cline_mcp_settings.json'),
     pathApi.join(home, '.codeium', 'windsurf', 'mcp_config.json'),
+    pathApi.join(env.COPILOT_HOME ? pathApi.resolve(cwd, env.COPILOT_HOME) : pathApi.join(home, '.copilot'), 'mcp-config.json'),
+    pathApi.join(userData, 'Code', 'User', 'mcp.json'),
+    pathApi.join(cwd, '.mcp.json'),
+    pathApi.join(cwd, '.vscode', 'mcp.json'),
+    pathApi.join(cwd, '.cursor', 'mcp.json'),
+    pathApi.join(platform === 'darwin' ? configHome : userData, 'devin', 'mcp_config.json'),
   ]
-
-  if (platform === 'win32') {
-    candidates.push(
-      pathApi.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
-      ...sharedCandidates,
-    )
-  } else if (platform === 'darwin') {
-    candidates.push(
-      path.join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json'),
-      ...sharedCandidates,
-    )
-  } else {
-    candidates.push(
-      path.join(home, '.config', 'Claude', 'claude_desktop_config.json'),
-      ...sharedCandidates,
-    )
-  }
-
-  return candidates
+  return [...new Set(candidates)]
 }
 
-export function loadConfig(configPath) {
+export function loadConfig(configPath, options = {}) {
   const raw = fs.readFileSync(configPath, 'utf8')
+  const normalized = path.resolve(configPath).replace(/\\/g, '/')
+  const jsonc = options.jsonc === true || /\.jsonc$/i.test(normalized)
+    || /\/(?:\.vscode|Code(?: - Insiders)?\/User(?:\/profiles\/[^/]+)?)\/mcp\.json$/i.test(normalized)
   return {
     raw,
-    json: JSON.parse(raw),
+    json: jsonc ? parseJsonc(raw) : JSON.parse(raw),
+    format: jsonc ? 'JSONC' : 'JSON',
   }
 }
 
@@ -158,9 +156,9 @@ export function redactReportText(value) {
   if (typeof value !== 'string') return value
   // Structured source needs recursive redaction: commas inside a credential
   // container are not boundaries between independent plaintext assignments.
-  if (/^\s*[\[{]/.test(value)) {
+  if (/^\s*(?:[\[{]|\/[/*])/.test(value)) {
     try {
-      return JSON.stringify(redactReport(JSON.parse(value)))
+      return JSON.stringify(redactReport(parseJsonc(value)))
     } catch {
       // Non-JSON prose and malformed snippets use the text heuristics below.
     }
@@ -258,8 +256,8 @@ export function diagnoseConfig(configPath, options = {}) {
   let loaded
 
   try {
-    loaded = loadConfig(configPath)
-    results.push(makeResult('PASS', 'json', 'Config is valid JSON'))
+    loaded = loadConfig(configPath, options)
+    results.push(makeResult('PASS', 'json', `Config is valid ${loaded.format}`))
   } catch (error) {
     // JSON.parse may quote source contents, including credentials. Only retain
     // numeric locations, never the runtime's raw parser or filesystem message.
