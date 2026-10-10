@@ -104,6 +104,8 @@ The default `config` profile checks:
 | Secret-like values | Tokens pasted into config | Keeps public reports safer |
 | Startup probe | Immediate process exit | Finds broken local stdio servers early |
 
+Configuration roots, server maps and entries must be objects; `args` must contain strings and generic `mcpServers` environments must map names to strings. Native VS Code `servers` also accepts finite numbers and `null`; probes convert numbers to strings and remove null-valued variables from the inherited environment. Invalid arguments or environment values prevent `--start` from launching the entry.
+
 ## Example Config
 
 ```json

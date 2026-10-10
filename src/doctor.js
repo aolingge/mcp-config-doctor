@@ -104,12 +104,17 @@ export function loadConfig(configPath, options = {}) {
   }
 }
 
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
 export function extractServers(json) {
-  if (json.mcpServers && typeof json.mcpServers === 'object') {
+  if (!isRecord(json)) return null
+  if (isRecord(json.mcpServers)) {
     return json.mcpServers
   }
 
-  if (json.servers && typeof json.servers === 'object') {
+  if (isRecord(json.servers)) {
     return json.servers
   }
 
@@ -139,6 +144,21 @@ function commandExists(command) {
     }
   }
   return false
+}
+
+function probeEnvironment(env) {
+  const merged = { ...process.env }
+  for (const [key, value] of Object.entries(env)) {
+    // Windows environment names are case-insensitive; remove inherited aliases.
+    if (process.platform === 'win32') {
+      for (const existing of Object.keys(merged)) {
+        if (existing.toLowerCase() === key.toLowerCase()) delete merged[existing]
+      }
+    }
+    if (value === null) delete merged[key]
+    else merged[key] = String(value)
+  }
+  return merged
 }
 
 function hasSecretLikeValue(value) {
@@ -284,6 +304,7 @@ export function diagnoseConfig(configPath, options = {}) {
     }
   }
 
+  const vscodeSchema = servers === loaded.json.servers
   const entries = Object.entries(servers)
   if (entries.length === 0) {
     results.push(makeResult('FAIL', 'servers', 'No MCP servers configured', 'Add at least one server entry.'))
@@ -292,7 +313,7 @@ export function diagnoseConfig(configPath, options = {}) {
   }
 
   for (const [name, server] of entries) {
-    if (!server || typeof server !== 'object') {
+    if (!isRecord(server)) {
       results.push(makeResult('FAIL', name, 'Server config is not an object', 'Use an object with command, args, and env.'))
       continue
     }
@@ -310,8 +331,10 @@ export function diagnoseConfig(configPath, options = {}) {
       results.push(makeResult('FAIL', `${name}:command`, 'Missing command or url', 'Add command for stdio server or url for remote server.'))
     }
 
-    if (server.args && !Array.isArray(server.args)) {
-      results.push(makeResult('FAIL', `${name}:args`, 'args must be an array', 'Use "args": ["arg1", "arg2"].'))
+    const argsValid = !Object.hasOwn(server, 'args')
+      || (Array.isArray(server.args) && server.args.every((value) => typeof value === 'string'))
+    if (!argsValid) {
+      results.push(makeResult('FAIL', `${name}:args`, 'args must be an array of strings', 'Use "args": ["arg1", "arg2"].'))
     }
 
     if (hasPermissionSignal(server)) {
@@ -325,13 +348,16 @@ export function diagnoseConfig(configPath, options = {}) {
       ))
     }
 
-    if (server.env && typeof server.env !== 'object') {
-      results.push(makeResult('FAIL', `${name}:env`, 'env must be an object', 'Use "env": {"KEY": "value"}.'))
+    const envValid = !Object.hasOwn(server, 'env')
+      || (isRecord(server.env) && Object.values(server.env).every((value) => typeof value === 'string'
+        || (vscodeSchema && (value === null || (typeof value === 'number' && Number.isFinite(value))))))
+    if (!envValid) {
+      results.push(makeResult('FAIL', `${name}:env`, vscodeSchema ? 'env must be an object of strings, finite numbers or null' : 'env must be an object of string values', 'Use "env": {"KEY": "value"}.'))
     }
 
-    const env = server.env && typeof server.env === 'object' ? server.env : {}
+    const env = isRecord(server.env) ? server.env : {}
     for (const [key, value] of Object.entries(env)) {
-      if (value === '' || value === null || value === undefined) {
+      if (value === '' || (!vscodeSchema && (value === null || value === undefined))) {
         results.push(makeResult('WARN', `${name}:env:${key}`, 'Environment variable is empty', 'Set the value in your local MCP config or secret store.'))
       }
       if (hasSecretLikeValue(value)) {
@@ -339,10 +365,10 @@ export function diagnoseConfig(configPath, options = {}) {
       }
     }
 
-    if (startChecks && server.command && typeof server.command === 'string' && commandExists(server.command)) {
+    if (startChecks && argsValid && envValid && server.command && typeof server.command === 'string' && commandExists(server.command)) {
       const args = Array.isArray(server.args) ? server.args : []
       const result = spawnSync(server.command, args, {
-        env: { ...process.env, ...env },
+        env: probeEnvironment(env),
         timeout: options.timeoutMs ?? 2500,
         stdio: 'ignore',
       })

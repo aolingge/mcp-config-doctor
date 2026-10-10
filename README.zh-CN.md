@@ -102,6 +102,8 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 | Secret-like values | token 被直接写进配置 | 分享报告前需要先脱敏 |
 | Startup probe | 进程一启动就退出 | 提前发现本地 stdio server 问题 |
 
+配置根节点、服务器映射及条目必须为对象；`args` 必须是字符串数组，普通 `mcpServers` 中的 `env` 必须将名称映射到字符串；原生 VS Code `servers` 还允许有限数字及 `null`，探测时会将数字转换为字符串，并从继承环境中移除值为 `null` 的变量。参数或环境变量结构无效时，`--start` 不会启动该条目。
+
 ## 示例配置
 
 ```json
@@ -134,7 +136,7 @@ npx mcp-config-doctor --path docs/ --profile server-smoke
 ## Roadmap
 
 - 扩展更多自定义客户端 profile 与配置格式支持。
-- 增加原生 Codex TOML 配置支持；目前仅支持 JSON，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
+- 增加原生 Codex TOML 配置支持；目前支持 JSON 与指定 VS Code JSONC 文件，不能直接检查 `~/.codex/config.toml` 或项目内的 `.codex/config.toml`，也不会自动发现它们。参见[配置路径与格式限制](docs/config-paths.md)。
 - 增加 MCP `initialize` 握手探测。
 - 通过合成回归样例持续扩展报告脱敏覆盖。
 - 收集更多真实配置样例作为 fixtures。
